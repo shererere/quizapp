@@ -12,10 +12,16 @@ app.get('/', function (req, res) {
   res.send('Hello World!');
 });
 
+
+/*
+  TODO:
+    -> tabele łączące
+*/
+
 // |--------|
 // |  quiz  |
 // |--------|
-app.post('/quiz/add', function (req, res) {
+app.post('/quiz', function (req, res) {
   if (typeof(req.body.name) == 'undefined' ||
       typeof(req.body.size) == 'undefined') {
         res.status(400).json({ error: 'Missing parameters!' });
@@ -34,7 +40,7 @@ app.post('/quiz/add', function (req, res) {
 // |-------------|
 // |  questions  |
 // |-------------|
-app.post('/question/add', function (req, res) {
+app.post('/question', function (req, res) {
   if (typeof(req.body.content) == 'undefined' ||
       typeof(req.body.correct_answer) == 'undefined' ||
       typeof(req.body.wrong_answer1) == 'undefined' ||
@@ -73,6 +79,7 @@ app.get('/user', function (req, res) {
 // return user with id
 app.get('/user/:id', function (req, res) {
   // TODO: no idea czy działa xd
+  // R: dziala
   db.users.findAll({
     where: {
       id: req.params.id,
@@ -82,8 +89,20 @@ app.get('/user/:id', function (req, res) {
   });
 });
 
+// return user with division
+app.get('/user/division/:division', function (req, res) {
+  db.users.findAll({
+    where: {
+      division: req.params.division,
+    },
+  }).then(function(result) {
+    res.status(200).json(result);
+  });
+});
 
-app.post('/user/add', function (req, res) {
+
+
+app.post('/user', function (req, res) {
   if (typeof(req.body.username) == 'undefined' ||
       typeof(req.body.password) == 'undefined' ||
       typeof(req.body.division) == 'undefined' ) {

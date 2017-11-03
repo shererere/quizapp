@@ -1,8 +1,8 @@
 'use strict';
 
 const Sequelize = require('sequelize');
-const sequelize = new Sequelize('xd', 'root', '', {
-  host: 'localhost',
+const sequelize = new Sequelize('quizapp', 'quizapp', 'zaq1@WSX', {
+  host: '139.59.166.253',
   dialect: 'mysql',
 });
 
