@@ -1,197 +1,151 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-
+const session = require('express-session');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const bCrypt = require('bcrypt-nodejs');
 const db = require('./db');
 
+const users = require('./routes/api/v1/users');
+const quizzes = require('./routes/api/v1/quizzes');
+const questions = require('./routes/api/v1/questions');
+
 const app = express();
-app.use(bodyParser.urlencoded({ extended: false }))
 
 app.locals.title = 'Quiz app';
+
+// use routes
+app.use('/api/v1/user', users);
+app.use('/api/v1/quiz', quizzes);
+app.use('/api/v1/question', questions);
+
+// passport configuration
+app.use(session({
+  secret: 'xdxdxdxd',
+  resave: true,
+  saveUninitialized: true,
+}));
+app.use(bodyParser.urlencoded({ extended: true })); // tu było false
+app.use(bodyParser.json()); // no idea niby czemu tak ma być, ale no ok
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use('local-register', new LocalStrategy(
+  {
+    passReqToCallback: true
+  },
+
+  function(req, username, password, done) {
+    var generateHash = function(password) {
+      return bCrypt.hashSync(password, bCrypt.genSaltSync(8), null);
+    };
+
+    db.users.findOne({
+      where: {
+        username: username
+      }
+    }).then(function(user) {
+      if (user) {
+        return done(null, false, {
+          message: 'User with this name exists'
+        });
+      } else {
+        var userPassword = generateHash(password);
+        var data = {
+          username: username,
+          password: userPassword,
+          division: req.body.division,
+          role: req.body.role,
+        };
+
+        db.users.create(data).then(function(newUser, created) {
+          if (!newUser) {
+            return done(null, false);
+          }
+
+          if (newUser) {
+            return done(null, newUser);
+          }
+        });
+      }
+    });
+
+  }
+));
+
+passport.use('local-login', new LocalStrategy(
+  {
+    passReqToCallback: true
+  },
+  function(req, username, password, done) {
+    var isPasswordValid = function(userpass, password) {
+      return bCrypt.compareSync(password, userpass);
+    }
+
+    db.users.findOne({
+      where: {
+        username: username,
+      }
+    }).then(function(user) {
+      if (!user) {
+        return done(null, false, {
+          message: 'User doesn\'t exists',
+        });
+      }
+
+      if (!isPasswordValid(user.password, password)) {
+        return done(null, false, {
+          message: 'Incorrect password'
+        });
+      }
+
+      return done(null, user);
+    }).catch(function(err) {
+      console.log('Error: ' + err);
+
+      return done(null, false, {
+        message: 'Something went wrong'
+      });
+    });
+  }
+));
+
+passport.serializeUser(function(user, done) {
+  done(null, user.id);
+});
+
+passport.deserializeUser(function(id, done) {
+  db.users.findById(id).then(function(user) {
+    if (user) {
+      done(null, user.get());
+    } else {
+      done(user.errors, null);
+    }
+  });
+});
 
 app.get('/', function (req, res) {
   res.send('Hello World!');
 });
 
+app.post('/register',
+  passport.authenticate('local-register', { successRedirect: '/',
+                                            failureRedirect: '/register' })
+);
 
-/*
-  TODO:
-    -> tabele łączące
-*/
-
-// |--------|
-// |  quiz  |
-// |--------|
-
-// return all quizzes
-app.get('/quizzes', function (req, res) {
-  db.quizzes.findAll().then(function(result) {
-    res.status(200).json(result);
-  });
-});
-
-// return all quizzes, that user takes part in
-app.get('/user/:user/quizzes', function (req, res) {
-  db.quizzes.findAll({
-    include: [{
-      model: db.users,
-      attributes: [],
-      where: {
-        id: req.params.user,
-      },
-    }],
-  }).then(function (result) {
-    res.status(200).json(result);
-  });
-});
-
-// add new quiz
-app.post('/quiz', function (req, res) {
-  if (typeof(req.body.name) == 'undefined' ||
-      typeof(req.body.size) == 'undefined') {
-        res.status(400).json({ error: 'Missing parameters!' });
-  } else {
-    db.sequelize.sync().then(function() {
-      db.quizzes.create({
-        name: req.body.name,
-        size: req.body.size,
-      });
-    }).then(function() {
-      res.status(201).json({ message: 'Quiz created successfully' });
-    });
-  }
-});
-
-
-
-// |-------------|
-// |  questions  |
-// |-------------|
-
-// return all the questions
-app.get('/questions', function (req, res) {
-  db.questions.findAll().then(function(result) {
-    res.status(200).json(result);
-  });
-});
-
-// return all questions that belong to the quiz
-app.get('/quiz/:quiz/questions', function (req,res) {
-  db.questions.findAll({
-    include: [{
-      model: db.quizzes,
-      attributes: [],
-      where: {
-        id: req.params.quiz,
-      },
-    }],
- }).then(function (result) {
-   res.status(200).json(result);
- });
-});
-
-// add new question
-app.post('/question', function (req, res) {
-  if (typeof(req.body.content) == 'undefined' ||
-      typeof(req.body.correct_answer) == 'undefined' ||
-      typeof(req.body.wrong_answer1) == 'undefined' ||
-      typeof(req.body.wrong_answer2) == 'undefined' ||
-      typeof(req.body.wrong_answer3) == 'undefined' ||
-      typeof(req.body.quiz_id) == 'undefined') {
-        res.status(400).json({ error: 'Missing parameters!' });
-  } else {
-    db.sequelize.sync().then(function() {
-      db.questions.create({
-        content: req.body.content,
-        correct_answer: req.body.correct_answer,
-        wrong_answer1: req.body.wrong_answer1,
-        wrong_answer2: req.body.wrong_answer2,
-        wrong_answer3: req.body.wrong_answer3,
-        quiz_id: req.body.quiz_id,
-      });
-    }).then(function() {
-      res.status(201).json({ message: 'Question added successfully' });
-    });
-  }
-});
-
-
-// |---------|
-// |  users  |
-// |---------|
-
-// return all users
-app.get('/users', function (req, res) {
-  db.users.findAll().then(function(result) {
-    res.status(200).json(result);
-  });
-});
-
-// return user with id
-app.get('/user/:id', function (req, res) {
-  // TODO: no idea czy działa xd
-  // R: dziala
-  db.users.findAll({
-    where: {
-      id: req.params.id,
-    },
-  }).then(function (result) {
-    res.status(200).json(result);
-  });
-});
-
-// return users that belong to the division
-app.get('/users/division/:division', function (req, res) {
-  db.users.findAll({
-    where: {
-      division: req.params.division,
-    },
-  }).then(function (result) {
-    res.status(200).json(result);
-  });
-});
-
-// return all users that take part in quiz
-app.get('/quiz/:quiz/users', function (req, res) {
-  db.users.findAll({
-    include: [{
-      model: db.quizzes,
-      attributes: [],
-      where: {
-        id: req.params.quiz,
-      },
-    }],
-    // TODO: trzeba wyjebac users_quizzes z response, bo jest zbędnę
-    // R: ;]
- }).then(function (result) {
-   res.status(200).json(result);
- });
-});
-
-// add new user
-app.post('/user', function (req, res) {
-  if (typeof(req.body.username) == 'undefined' ||
-      typeof(req.body.password) == 'undefined' ||
-      typeof(req.body.division) == 'undefined' ) {
-        res.status(400).json({ error: 'Missing parameters!' });
-  } else {
-    db.sequelize.sync().then(function() {
-      db.users.create({
-        username: req.body.username,
-        password: req.body.password, //plaintext xdxdxdxd
-        division: req.body.division,
-        role: 'user',
-      });
-    }).then(function() {
-      res.status(201).json({ message: 'User created successfully' });
-    });
-  }
-
-});
+app.post('/login',
+  passport.authenticate('local-login', { successRedirect: '/',
+                                   failureRedirect: '/login' })
+);
 
 app.listen(3000, function () {
   console.log('Example app listening on port 3000!');
 });
 
+
+// tu jest fajny kod do przyszłej rejestracji w apce
+// https://code.tutsplus.com/tutorials/using-passport-with-sequelize-and-mysql--cms-27537
 
 // http://www.restapitutorial.com/httpstatuscodes.html
 // bardzo ważne to jest
