@@ -14,11 +14,6 @@ const app = express();
 
 app.locals.title = 'Quiz app';
 
-// use routes
-app.use('/api/v1/user', users);
-app.use('/api/v1/quiz', quizzes);
-app.use('/api/v1/question', questions);
-
 // passport configuration
 app.use(session({
   secret: 'xdxdxdxd',
@@ -27,6 +22,11 @@ app.use(session({
 }));
 app.use(bodyParser.urlencoded({ extended: true })); // tu było false
 app.use(bodyParser.json()); // no idea niby czemu tak ma być, ale no ok
+
+// use routes
+app.use('/api/v1/user', users);
+app.use('/api/v1/quiz', quizzes);
+app.use('/api/v1/question', questions);
 
 app.use(passport.initialize());
 app.use(passport.session());
