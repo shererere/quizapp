@@ -46,6 +46,25 @@ routes.get('/:user/quizzes', function (req, res) {
   });
 });
 
+routes.post('/answer', function(req, res) {
+  if (typeof(req.body.questionid) == 'undefined' ||
+      typeof(req.body.answer) == 'undefined' ||
+      typeof(req.body.userid) == 'undefined') {
+        res.status(400).json({ error: 'Missing parameters!' });
+  } else {
+    db.sequelize.sync().then(function() {
+      db.users_answers.create({
+        question_id: req.body.questionid,
+        user_id: req.body.userid,
+        answer: req.body.answer,
+      });
+    }).then(function() {
+      res.status(201).json({ message: 'User answered to question successfully' });
+    });
+  }
+
+});
+
 // add new user
 // routes.post('/user', function (req, res) {
 //   if (typeof(req.body.username) == 'undefined' ||

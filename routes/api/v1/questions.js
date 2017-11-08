@@ -33,4 +33,31 @@ routes.post('/', function (req, res) {
   }
 });
 
+// remove question
+routes.delete('/', function(req, res) {
+  if (typeof(req.body.id) == 'undefined') {
+    res.status(400).json({ error: 'Missing parameters!' });
+  } else {
+    db.questions.findOne({ 
+      where: {
+        id: req.body.id
+      }
+    }).then(function(result) {
+      if (result == null) {
+        // TODO: no JSON response
+        res.status(204).json({ error: 'Question not found' });
+      } else {
+        db.questions.destroy({
+          where: {
+            id: req.body.id,
+          }
+        }).then(function() {
+          res.status(200).json({ message: 'Question deleted successfully' });
+        });
+      }
+
+    });
+  }
+});
+
 module.exports = routes;

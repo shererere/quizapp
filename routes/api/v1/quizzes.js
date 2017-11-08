@@ -35,8 +35,6 @@ routes.get('/:quiz/users', function (req, res) {
         id: req.params.quiz,
       },
     }],
-    // TODO: trzeba wyjebac users_quizzes z response, bo jest zbędnę
-    // R: ;]
  }).then(function (result) {
    res.status(200).json(result);
  });
@@ -55,6 +53,76 @@ routes.get('/:quiz/questions', function (req,res) {
  }).then(function (result) {
    res.status(200).json(result);
  });
+});
+
+// link quiz to user
+routes.post('/link', function(req, res) {
+  if (typeof(req.body.quizid) == 'undefined' ||
+      typeof(req.body.userid) == 'undefined') {
+        res.status(400).json({ error: 'Missing parameters!' });
+  } else {
+    db.sequelize.sync().then(function() {
+      db.users_quizzes.create({
+        quiz_id: req.body.quizid,
+        user_id: req.body.userid,
+      });
+    }).then(function() {
+      res.status(201).json({ message: 'Quiz linked to user successfully' });
+    });
+  }
+});
+
+// TODO: unlink ?
+// unlink quiz from user
+routes.delete('/unlink', function(req, res) {
+  if (typeof(req.body.quizid) == 'undefined' ||
+      typeof(req.body.userid) == 'undefined') {
+        res.status(400).json({ error: 'Missing parameters!' });
+  } else {
+    db.sequelize.sync().then(function() {
+      db.users_quizzes.findOne({
+        where: {
+          quiz_id: req.body.quizid,
+          user_id: req.body.userid,
+        },
+      }).then(function(result) {
+        db.users_quizzes.destroy({
+          where: {
+            quiz_id: req.body.quizid,
+            user_id: req.body.userid,
+          }
+        }).then(function() {
+          res.status(201).json({ message: 'Quiz unlinked from user successfully' });
+        });
+      });
+    });
+  }
+});
+
+// remove quiz
+routes.delete('/', function(req, res) {
+  if (typeof(req.body.id) == 'undefined') {
+    res.status(400).json({ error: 'Missing parameters!' });
+  } else {
+    db.quizzes.findOne({ 
+      where: {
+        id: req.body.id
+      }
+    }).then(function(result) {
+      if (result == null) {
+        // TODO: no JSON response
+        res.status(204).json({ error: 'Quiz not found' });
+      } else {
+        db.quizzes.destroy({
+          where: {
+            id: req.body.id,
+          }
+        }).then(function() {
+          res.status(200).json({ message: 'Quiz deleted successfully' });
+        });
+      }
+    });
+  }
 });
 
 module.exports = routes;
