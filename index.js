@@ -139,6 +139,10 @@ app.post('/login',
                                    failureRedirect: '/login' })
 );
 
+db.sequelize.sync().then(function() {
+  console.log('Database is synced');
+});
+
 app.listen(3000, function () {
   console.log('Example app listening on port 3000!');
 });

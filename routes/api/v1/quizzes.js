@@ -55,8 +55,9 @@ routes.get('/:quiz/questions', function (req,res) {
  });
 });
 
-// link quiz to user
-routes.post('/link', function(req, res) {
+// assign (link) quiz to user
+// link => assign
+routes.post('/assign', function(req, res) {
   if (typeof(req.body.quizid) == 'undefined' ||
       typeof(req.body.userid) == 'undefined') {
         res.status(400).json({ error: 'Missing parameters!' });
@@ -67,14 +68,14 @@ routes.post('/link', function(req, res) {
         user_id: req.body.userid,
       });
     }).then(function() {
-      res.status(201).json({ message: 'Quiz linked to user successfully' });
+      res.status(201).json({ message: 'Quiz assigned to user successfully' });
     });
   }
 });
 
-// TODO: unlink ?
-// unlink quiz from user
-routes.delete('/unlink', function(req, res) {
+// unassign (unlink) quiz from user
+// unlink => unassgin
+routes.delete('/unassign', function(req, res) {
   if (typeof(req.body.quizid) == 'undefined' ||
       typeof(req.body.userid) == 'undefined') {
         res.status(400).json({ error: 'Missing parameters!' });
@@ -92,7 +93,7 @@ routes.delete('/unlink', function(req, res) {
             user_id: req.body.userid,
           }
         }).then(function() {
-          res.status(201).json({ message: 'Quiz unlinked from user successfully' });
+          res.status(201).json({ message: 'Quiz unassigned from user successfully' });
         });
       });
     });

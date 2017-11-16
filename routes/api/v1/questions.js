@@ -15,7 +15,7 @@ routes.post('/', function (req, res) {
       typeof(req.body.wrong_answer1) == 'undefined' ||
       typeof(req.body.wrong_answer2) == 'undefined' ||
       typeof(req.body.wrong_answer3) == 'undefined' ||
-      typeof(req.body.quiz_id) == 'undefined') {
+      typeof(req.body.quizid) == 'undefined') {
         res.status(400).json({ error: 'Missing parameters!' });
   } else {
     db.sequelize.sync().then(function() {
@@ -25,7 +25,7 @@ routes.post('/', function (req, res) {
         wrong_answer1: req.body.wrong_answer1,
         wrong_answer2: req.body.wrong_answer2,
         wrong_answer3: req.body.wrong_answer3,
-        quiz_id: req.body.quiz_id,
+        quiz_id: req.body.quizid,
       });
     }).then(function() {
       res.status(201).json({ message: 'Question added successfully' });

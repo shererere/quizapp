@@ -4,6 +4,10 @@ const Sequelize = require('sequelize');
 const sequelize = new Sequelize('quizapp', 'quizapp', 'zaq1@WSX', {
   host: '139.59.166.253',
   dialect: 'mysql',
+  define: {
+    charset: 'utf8',
+    collate: 'utf8_polish_ci',
+  },
 });
 
 const db = {};
@@ -25,6 +29,9 @@ db.users_quizzes = require('./models/users_quizzes.js')(sequelize, Sequelize);
 // |-----------|
 db.quizzes.hasMany(db.questions);
 db.questions.belongsTo(db.quizzes);
+
+db.quizzes.hasMany(db.users_answers);
+db.users_answers.belongsTo(db.quizzes);
 
 db.users.belongsToMany(db.quizzes, {
   through: {
