@@ -1,0 +1,15 @@
+
+root = true
+
+[*]
+end_of_line = lf
+insert_final_newline = true
+indend_size = 2
+
+[*.{js,jsx}]
+indend_style = space
+indend_size = 2
+trim_trailing_whitespace = true
+
+[*.md]
+indend_style = tab

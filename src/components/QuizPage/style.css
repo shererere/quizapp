@@ -1,0 +1,19 @@
+.wrapper {
+  max-width: 900px;
+  margin: 36px auto;
+}
+
+.quizTitle {
+  text-align: center;
+  font-weight: 700;
+  font-size: 28px;
+  margin: 16px;
+}
+
+.questionList {
+
+}
+
+.questionList > section {
+  margin: 32px 0;
+}
