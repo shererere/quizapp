@@ -15,6 +15,9 @@ routes.get('/:id', function (req, res) {
     where: {
       id: req.params.id,
     },
+    attributes: {
+      exclude: ['password'],
+    },
   }).then(function (result) {
     res.status(200).json(result);
   });
@@ -30,10 +33,10 @@ routes.get('/:user/quiz/:quiz/answers', function (req, res) {
         model: db.questions,
         attributes: [],
         where: {
-          quiz_id: req.params.quiz, 
+          quiz_id: req.params.quiz,
         }
       }],
-    }], 
+    }],
     where: {
         user_id: req.params.user,
     },
@@ -95,7 +98,7 @@ routes.delete('/', function(req, res) {
   if (typeof(req.body.id) == 'undefined') {
     res.status(400).json({ error: 'Missing parameters!' });
   } else {
-    db.users.findOne({ 
+    db.users.findOne({
       where: {
         id: req.body.id
       }

@@ -46,3 +46,56 @@
 	text-align: center;
 }
 
+:-moz-focusring {
+  outline: 0;
+}
+
+.formcontainer {
+  margin: 64px 0;
+}
+
+.input {
+  display: block;
+  width: 230px;
+  margin: 24px auto;
+  padding: 10px 16px;
+  outline: 0;
+  border: 1px solid transparent; /* xdxdxdxdxd XD powód: przy `border:0` na focus powiększał się kontener o 1px; */
+  transition: all .3s ease;
+  border-radius: 5px;
+}
+
+.input:active, .input:focus {
+  border: 1px solid #545454;
+}
+
+.button {
+  display: inline-block;
+  font-family: "Roboto", sans-serif;
+  font-size: 14px;
+  outline: 0;
+  margin: 32px 0 0 0;
+  padding: 14px 24px 12px 24px; /* bo krzywo jest */
+  color: #2C2C2C;
+  border: 2px solid #2C2C2C;
+  border-radius: 99999px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  text-transform: uppercase;
+  font-weight: 700;
+  transition: all .24s ease;
+}
+
+.button:hover {
+  background-color: #2C2C2C;
+  color: white;
+  border: 2px solid #2C2C2C;
+}
+
+.button:active {
+  background-color: #1f1f1f;
+  border: 2px solid #1f1f1f;
+}
+
