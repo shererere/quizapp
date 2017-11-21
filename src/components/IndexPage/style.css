@@ -1,0 +1,20 @@
+.main {
+  font-size: 1em;
+  margin: 12px;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.logged {
+  font-size: 36px;
+  text-align: center;
+  margin: 36px 0;
+  font-weight: 700;
+}
+
+.quizzesList {}
+.quiz {}
+.quizName {}

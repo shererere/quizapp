@@ -59,3 +59,4 @@ typings/
 
 # misc
 package-lock.json
+/dist
