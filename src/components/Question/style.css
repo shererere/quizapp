@@ -1,0 +1,10 @@
+.question {
+	padding: 20px 0;	
+}
+
+.question__content {
+	background: #eaeaea;
+	display: block;
+	padding: 10px;
+	font-size: 1.15em;
+}

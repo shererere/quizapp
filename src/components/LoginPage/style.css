@@ -69,6 +69,10 @@
   border: 1px solid #545454;
 }
 
+.input:invalid {
+  border: 1px solid red;
+}
+
 .button {
   display: inline-block;
   font-family: "Roboto", sans-serif;
@@ -76,6 +80,7 @@
   outline: 0;
   margin: 32px 0 0 0;
   padding: 14px 24px 12px 24px; /* bo krzywo jest */
+  background-color: transparent;
   color: #2C2C2C;
   border: 2px solid #2C2C2C;
   border-radius: 99999px;
@@ -86,6 +91,9 @@
   text-transform: uppercase;
   font-weight: 700;
   transition: all .24s ease;
+  -webkit-appearance: none;
+  -moz-appearance:    none;
+  cursor: pointer;
 }
 
 .button:hover {
@@ -99,3 +107,25 @@
   border: 2px solid #1f1f1f;
 }
 
+/* ===========================================
+ * animations
+ * =========================================== */
+
+ @keyframes shake {
+  from, to {
+    transform: translateX(0);
+  }
+
+  20%, 60% {
+    transform: translateX(-10px);
+  }
+
+  40%, 80% {
+    transform: translateX(10px);
+  }
+}
+
+.shake {
+  animation-name: shake;
+  animation-duration: .35s;
+}

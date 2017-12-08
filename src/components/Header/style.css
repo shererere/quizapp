@@ -17,4 +17,7 @@
   line-height: 64px;
   display: inline;
   /* NOTE: no idea if it doesn't break anything. now it works xd */
+
+  color: #282424;
+  text-decoration: none;
 }

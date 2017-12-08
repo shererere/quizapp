@@ -25,17 +25,27 @@ export default class MainPage extends Component {
     this.setState({ password: event.target.value });
   }
 
-  loginUser() {
-    axios.post('http://localhost:3000/login', {
-      username: this.state.username,
-      password: this.state.password,
-    }).then((response) => {
-      localStorage.setItem('token', response.data.token);
+  loginUser(e) {
+    e.preventDefault();
 
-      this.props.history.push('/panel');
-    }).catch((error) => {
-      console.log(error);
-    });
+    if (this.state.username === null || this.state.username === '') {
+      // TODO: add 'shake' class to username input
+      // console.log(e.target.previousSibling.previousSibling);
+    } else if (this.state.password === null || this.state.password === '') {
+      // TODO: add 'shake' class to password input
+      // console.log(e.target.previousSibling);
+    } else {
+      axios.post('http://localhost:3000/login', {
+        username: this.state.username,
+        password: this.state.password,
+      }).then((response) => {
+        localStorage.setItem('token', response.data.token);
+
+        this.props.history.push('/');
+      }).catch((error) => {
+        console.log(error);
+      });
+    }
   }
 
   render() {
@@ -48,7 +58,7 @@ export default class MainPage extends Component {
             <form className={styles.formcontainer}>
               <input className={styles.input} type="text" placeholder="Nazwa użytkownika" onChange={this.handleUsername} />
               <input className={styles.input} type="password" placeholder="Hasło" onChange={this.handlePassword} />
-              <div className={styles.button} onClick={this.loginUser}>Zaloguj!</div>
+              <button className={styles.button} onClick={this.loginUser}>Zaloguj!</button>
             </form>
           </div>
           <Footer />

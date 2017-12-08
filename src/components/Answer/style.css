@@ -1,0 +1,25 @@
+.answer {
+	box-sizing: border-box;
+	border-bottom: 1px solid #eaeaea;
+	padding: 10px;
+	margin: 0;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	font-size: 1.05em;
+}
+
+.answer:hover {
+	padding-left: 15px;
+}
+
+.answer input {
+	display: none;
+}
+
+.selected {
+	background: rgba(0,0,255,0.2);
+}
+
+.correct {
+	background: rgba(0,255,0,0.2);
+}
