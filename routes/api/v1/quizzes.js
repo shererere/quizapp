@@ -8,6 +8,17 @@ routes.get('/', function (req, res) {
   });
 });
 
+// return quiz info with id
+routes.get('/:quiz', function (req, res) {
+  db.quizzes.findAll({
+    where: {
+      id: req.params.quiz,
+    },
+  }).then(function (result) {
+    res.status(200).json(result);
+  });
+});
+
 // add new quiz
 routes.post('/', function (req, res) {
   if (typeof(req.body.name) == 'undefined' ||
@@ -105,7 +116,7 @@ routes.delete('/', function(req, res) {
   if (typeof(req.body.id) == 'undefined') {
     res.status(400).json({ error: 'Missing parameters!' });
   } else {
-    db.quizzes.findOne({ 
+    db.quizzes.findOne({
       where: {
         id: req.body.id
       }
