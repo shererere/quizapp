@@ -1,0 +1,17 @@
+.main {
+}
+
+.nav {
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 200px;
+	height: 100vh;
+	background: #eaeaea;
+}
+
+.menu {
+	position: relative;
+	top: 200px;
+	left: 15px;
+}

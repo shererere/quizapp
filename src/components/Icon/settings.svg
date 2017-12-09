@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="70" height="70" viewBox="0 0 70 70" style="width: 100%; height: 100%;"><desc>Made with illustrio</desc>
+  
+<g class="base"><g fill="none" fill-rule="evenodd" stroke="none" class="main-fill">
+    
+    
+  </g><g fill="none" transform="translate(18.025 18.025)" stroke="none" class="main-fill">
+      <polygon points="22.519 20.1 22.278 20.341 6.78 4.844 7.265 4.359 5.811 1.938 1.938 0 0 1.938 1.938 5.811 4.359 7.265 4.844 6.78 13.863 15.801 0 29.664 4.238 33.902 18.101 20.039 20.341 22.278 20.1 22.521 20.084 24.928 29.058 33.902 33.902 29.058 24.926 20.084" fill="none" stroke="none" class="main-fill"></polygon>
+      <path d="M17.4340833,12.2301083 L21.671825,16.46785 L21.9430167,16.1966583 C23.0066667,16.6769167 24.1833667,16.9509667 25.42645,16.9509667 C30.1063583,16.9509667 33.9019333,13.1553333 33.9019333,8.47548333 C33.9019333,7.6209 33.7719667,6.79595 33.5360667,6.01615 L28.2515917,11.300625 L24.01385,9.888025 L22.60125,5.65028333 L27.885725,0.365808333 C27.1060417,0.129966667 26.2810917,0 25.42645,0 C20.7465417,0 16.9509667,3.79563333 16.9509667,8.47548333 C16.9509667,9.71856667 17.2250167,10.8952083 17.705275,11.9589167 L17.4340833,12.2301083 L17.4340833,12.2301083 Z" fill="none" stroke="none" class="main-fill"></path>
+    </g></g><style>
+          .main-fill {fill: #000000;}
+          .main-stroke {stroke: #000000;}
+          .secondary-fill {fill: #000000;}
+          .secondary-stroke {stroke: #000000;}
+
+          .main-fill--darken {fill: #000000;}
+          .main-stroke--darken {stroke: #000000;}
+          .secondary-fill--darken {fill: #000000;}
+          .secondary-stroke--darken {stroke: #000000;}
+
+          .main-fill--darkener {fill: #000000;}
+          .main-stroke--darkener {stroke: #000000;}
+          .secondary-fill--darkener {fill: #000000;}
+          .secondary-stroke--darkener {stroke: #000000;}
+        </style></svg>

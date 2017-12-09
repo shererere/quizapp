@@ -1,0 +1,29 @@
+.menu {
+  height: 100%;
+  float: right;
+}
+
+.menu ul {
+  height: 100%;
+}
+
+.menu a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.menu_horizontal .menuitem {
+  display: inline-block;
+  margin: 0 12px;
+}
+
+.menu_vertical .menuitem {
+  display: block;
+  margin: 12px;
+}
+
+.menuitem {
+  font-size: 18px;
+  padding: 12px;
+  line-height: 40px;
+}
