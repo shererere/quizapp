@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="70" height="70" viewBox="0 0 70 70" style="width: 100%; height: 100%;"><desc>Made with illustrio</desc>
+  
+<g class="base"><g fill="none" fill-rule="evenodd" stroke="none" class="main-fill">
+    
+    <path fill="none" d="M24.351,20.956 C25.289,21.894 25.166,23.289 24.23,24.227 C23.292,25.168 21.827,25.22 20.889,24.283 L13.005,16.395 L5.125,24.274 C4.188,25.215 2.754,25.127 1.817,24.189 C0.88,23.257 0.786,21.829 1.723,20.891 L9.612,13.003 L1.704,5.095 C0.768,4.158 0.749,2.621 1.686,1.684 C2.623,0.745 4.169,0.775 5.102,1.712 L13.005,9.611 L20.931,1.686 C21.869,0.747 23.311,0.822 24.248,1.759 C25.185,2.694 25.283,4.118 24.347,5.055 L16.397,13.003 L24.351,20.956 Z" transform="translate(22 22)" stroke="none" class="main-fill"></path>
+  </g></g><style>
+          .main-fill {fill: #90ca00;}
+          .main-stroke {stroke: #90ca00;}
+          .secondary-fill {fill: #4b6300;}
+          .secondary-stroke {stroke: #4b6300;}
+
+          .main-fill--darken {fill: #597d00;}
+          .main-stroke--darken {stroke: #597d00;}
+          .secondary-fill--darken {fill: #111600;}
+          .secondary-stroke--darken {stroke: #111600;}
+
+          .main-fill--darkener {fill: #354a00;}
+          .main-stroke--darkener {stroke: #354a00;}
+          .secondary-fill--darkener {fill: #000000;}
+          .secondary-stroke--darkener {stroke: #000000;}
+        </style></svg>

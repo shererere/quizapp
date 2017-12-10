@@ -1,0 +1,64 @@
+/* NOTE: cały ten modal jest krzywo fhuuu */
+/* TODO: refactor ten kod */
+
+.hidden {
+  display: none;
+}
+
+/* xdxdxdxdxdxxdxdxdxdxdxddddxdx */
+
+.wrapper {
+  width: 350px;
+  height: 172px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  background-color: yellowgreen;
+}
+
+.modal {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+.close_button {
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  cursor: pointer;
+}
+.icon_wrapper {
+  width: 64px;
+  height: 64px;
+  text-align: center;
+  position: absolute;
+  z-index: 100;
+  left: 12px;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+}
+
+.message_wrapper {
+  width: calc(350px - 70px - 24px);
+  /* height: calc(120px - 24px); */
+  height: 64px;
+  position: absolute;
+  top: 42px;
+  right: 0;
+  text-align: center;
+}
+
+.message_title {
+  font-size: 24px;
+  margin: 8px 0 14px 0;
+  font-weight: 700;
+}
+
+.message_content {
+  font-weight: 500;
+}

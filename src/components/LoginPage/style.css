@@ -106,26 +106,3 @@
   background-color: #1f1f1f;
   border: 2px solid #1f1f1f;
 }
-
-/* ===========================================
- * animations
- * =========================================== */
-
- @keyframes shake {
-  from, to {
-    transform: translateX(0);
-  }
-
-  20%, 60% {
-    transform: translateX(-10px);
-  }
-
-  40%, 80% {
-    transform: translateX(10px);
-  }
-}
-
-.shake {
-  animation-name: shake;
-  animation-duration: .35s;
-}

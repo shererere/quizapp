@@ -29,12 +29,15 @@ export default class MainPage extends Component {
     e.preventDefault();
 
     if (this.state.username === null || this.state.username === '') {
-      // TODO: add 'shake' class to username input
-      // console.log(e.target.previousSibling.previousSibling);
-    } else if (this.state.password === null || this.state.password === '') {
-      // TODO: add 'shake' class to password input
-      // console.log(e.target.previousSibling);
-    } else {
+      // ERROR
+      e.target.previousSibling.previousSibling.classList.add(styles.shake);
+    }
+    if (this.state.password === null || this.state.password === '') {
+      // ERROR
+      e.target.previousSibling.classList.add(styles.shake);
+    }
+
+    if (this.state.username !== '' && this.state.password !== '') {
       axios.post('http://localhost:3000/login', {
         username: this.state.username,
         password: this.state.password,
@@ -56,8 +59,19 @@ export default class MainPage extends Component {
           <Header align='center' />
           <div className={styles.box}>
             <form className={styles.formcontainer}>
-              <input className={styles.input} type="text" placeholder="Nazwa użytkownika" onChange={this.handleUsername} />
-              <input className={styles.input} type="password" placeholder="Hasło" onChange={this.handlePassword} />
+              <input
+                className={styles.input}
+                type="text"
+                placeholder="Nazwa użytkownika"
+                onChange={this.handleUsername}
+              />
+              <input
+                className={styles.input}
+                type="password"
+                placeholder="Hasło"
+                onChange={this.handlePassword}
+              />
+
               <button className={styles.button} onClick={this.loginUser}>Zaloguj!</button>
             </form>
           </div>

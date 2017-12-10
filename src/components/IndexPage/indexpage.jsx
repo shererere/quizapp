@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import Header from '../Header/header.jsx';
 import Footer from '../Footer/footer.jsx';
 import styles from './style.css';
+import Modal from '../Modal/modal.jsx';
 
 export default class IndexPage extends Component {
   constructor(props) {
@@ -45,7 +46,7 @@ export default class IndexPage extends Component {
     }
   }
 
-  componentDidMount() {
+  componentWillMount() {
     this.redirectIfUserIsNotLogged().then(() => {
       this.callAPIEndpoints();
     });
@@ -74,6 +75,8 @@ export default class IndexPage extends Component {
           <ul className={styles.quizzesList}>
             {quizzesComponent}
           </ul>
+
+        {/* <Modal icon="error" title="Błąd" message="Błędny login lub hasło!" /> */}
         <Footer />
       </main>
     );

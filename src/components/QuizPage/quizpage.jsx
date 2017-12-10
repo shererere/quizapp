@@ -56,7 +56,7 @@ export default class QuizPage extends Component {
     }
   }
 
-  componentDidMount() {
+  componentWillMount() {
     this.redirectIfUserIsNotLogged().then(() => {
       this.callAPIEndpoints().then(() => {
         this.redirectIfUserSolvedQuiz();
