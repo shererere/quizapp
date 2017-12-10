@@ -17,9 +17,12 @@ export default class QuizPage extends Component {
       title: null,
       questions: null,
       usersAnswers: null,
+      selectedAnswers: [],
     };
 
     this.logoutUser = this.logoutUser.bind(this);
+    this.selectAnswer = this.selectAnswer.bind(this);
+    this.solveQuiz = this.solveQuiz.bind(this);
   }
 
   async redirectIfUserIsNotLogged() {
@@ -64,6 +67,28 @@ export default class QuizPage extends Component {
     });
   }
 
+  selectAnswer(id, selection) {
+    const stateCopy = Object.assign({}, this.state);
+    stateCopy.selectedAnswers.push({ id, selection });
+    this.setState(stateCopy);
+  }
+
+  solveQuiz() {
+    const stateCopy = Object.assign({}, this.state);
+    for (let i = 0; i < stateCopy.selectedAnswers.length; i += 1) {
+      axios.post('http://localhost:3000/api/v1/user/quiz/answer/', {
+        questionid: stateCopy.selectedAnswers[i].id,
+        userid: stateCopy.userid,
+        quizid: stateCopy.quizid,
+        answer: stateCopy.selectedAnswers[i].selection,
+      }).then((response) => {
+        console.log(response);
+      }).catch((error) => {
+        console.log(error);
+      });
+    }
+  }
+
   render() {
     const menuComponent = <span onClick={this.logoutUser}>logout</span>;
     let questionsComponent = null;
@@ -71,11 +96,13 @@ export default class QuizPage extends Component {
     if (this.state.questions !== null) {
       questionsComponent = this.state.questions.map((q, i) =>
         <Question
+          id={q.id}
           question={q.content}
           answer1={q.correct_answer}
           answer2={q.wrong_answer1}
           answer3={q.wrong_answer2}
           answer4={q.wrong_answer3}
+          selectAnswer={this.selectAnswer}
           key={i}
         />);
     } else if (this.state.questions === null || this.state.questions === []) {
@@ -90,7 +117,7 @@ export default class QuizPage extends Component {
           <ul className={styles.questionList}>
             {questionsComponent}
           </ul>
-          <button className={styles.button}>Sprawdź odpowiedzi</button>
+          <button onClick={this.solveQuiz} className={styles.button}>Sprawdź odpowiedzi</button>
         </div>
         <Footer />
       </main>
