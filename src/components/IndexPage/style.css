@@ -14,10 +14,18 @@
   font-weight: 700;
 }
 
+/* ??? */
+.subtitle {
+  font-size: 24px;
+  text-align: center;
+  margin: 48px 0;
+}
+
 .quizzesList {
   max-width: 1000px;
   margin: 0 auto;
 }
+
 .quiz {
   padding: 16px;
   background: #e5e5e5;

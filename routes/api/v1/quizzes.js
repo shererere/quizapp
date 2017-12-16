@@ -5,6 +5,8 @@ const db = require('../../../db');
 routes.get('/', function (req, res) {
   db.quizzes.findAll().then(function(result) {
     res.status(200).json(result);
+  }).catch(function (error) {
+    res.status(400).json({ messsage: 'Error 400' });
   });
 });
 
@@ -16,6 +18,8 @@ routes.get('/:quiz', function (req, res) {
     },
   }).then(function (result) {
     res.status(200).json(result);
+  }).catch(function (error) {
+    res.status(400).json({ messsage: 'Error 400' });
   });
 });
 
@@ -32,6 +36,8 @@ routes.post('/', function (req, res) {
       });
     }).then(function() {
       res.status(201).json({ message: 'Quiz created successfully' });
+    }).catch(function (error) {
+      res.status(400).json({ messsage: 'Error 400' });
     });
   }
 });
@@ -46,9 +52,11 @@ routes.get('/:quiz/users', function (req, res) {
         id: req.params.quiz,
       },
     }],
- }).then(function (result) {
-   res.status(200).json(result);
- });
+  }).then(function (result) {
+    res.status(200).json(result);
+  }).catch(function (error) {
+    res.status(400).json({ messsage: 'Error 400' });
+  });
 });
 
 // return all questions that belong to the quiz
@@ -61,13 +69,14 @@ routes.get('/:quiz/questions', function (req,res) {
         id: req.params.quiz,
       },
     }],
- }).then(function (result) {
-   res.status(200).json(result);
- });
+  }).then(function (result) {
+    res.status(200).json(result);
+  }).catch(function (error) {
+    res.status(400).json({ messsage: 'Error 400' });
+  });
 });
 
 // assign (link) quiz to user
-// link => assign
 routes.post('/assign', function(req, res) {
   if (typeof(req.body.quizid) == 'undefined' ||
       typeof(req.body.userid) == 'undefined') {
@@ -80,12 +89,13 @@ routes.post('/assign', function(req, res) {
       });
     }).then(function() {
       res.status(201).json({ message: 'Quiz assigned to user successfully' });
+    }).catch(function (error) {
+      res.status(400).json({ messsage: 'Error 400' });
     });
   }
 });
 
 // unassign (unlink) quiz from user
-// unlink => unassgin
 routes.delete('/unassign', function(req, res) {
   if (typeof(req.body.quizid) == 'undefined' ||
       typeof(req.body.userid) == 'undefined') {
@@ -106,6 +116,8 @@ routes.delete('/unassign', function(req, res) {
         }).then(function() {
           res.status(201).json({ message: 'Quiz unassigned from user successfully' });
         });
+      }).catch(function (error) {
+        res.status(400).json({ messsage: 'Error 400' });
       });
     });
   }
@@ -121,18 +133,15 @@ routes.delete('/', function(req, res) {
         id: req.body.id
       }
     }).then(function(result) {
-      if (result == null) {
-        // TODO: no JSON response
-        res.status(204).json({ error: 'Quiz not found' });
-      } else {
-        db.quizzes.destroy({
-          where: {
-            id: req.body.id,
-          }
-        }).then(function() {
-          res.status(200).json({ message: 'Quiz deleted successfully' });
-        });
-      }
+      db.quizzes.destroy({
+        where: {
+          id: req.body.id,
+        }
+      }).then(function() {
+        res.status(200).json({ message: 'Quiz deleted successfully' });
+      });
+    }).catch(function (error) {
+      res.status(204).json({ messsage: 'Quiz not found' });
     });
   }
 });

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import Header from '../Header/header.jsx';
 import Footer from '../Footer/footer.jsx';
 import styles from './style.css';
@@ -8,8 +9,8 @@ export default class MainPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      username: null,
-      password: null,
+      username: '',
+      password: '',
     };
 
     this.handleUsername = this.handleUsername.bind(this);
@@ -28,13 +29,19 @@ export default class MainPage extends Component {
   loginUser(e) {
     e.preventDefault();
 
-    if (this.state.username === null || this.state.username === '') {
-      // ERROR
-      e.target.previousSibling.previousSibling.classList.add(styles.shake);
-    }
-    if (this.state.password === null || this.state.password === '') {
-      // ERROR
-      e.target.previousSibling.classList.add(styles.shake);
+    // NOTE: chyba nie da się, żeby input był `null`
+    if (this.state.username === '' && this.state.password === '') {
+      toast('Wpisz poprawną nazwę uzytkownika i hasło!', {
+        type: 'error',
+      });
+    } else if (this.state.password === '') {
+      toast('Wpisz hasło!', {
+        type: 'error',
+      });
+    } else if (this.state.username === '') {
+      toast('Wpisz nazwę użytkownika!', {
+        type: 'error',
+      });
     }
 
     if (this.state.username !== '' && this.state.password !== '') {
@@ -46,7 +53,24 @@ export default class MainPage extends Component {
 
         this.props.history.push('/');
       }).catch((error) => {
-        console.log(error);
+        if (error.response) {
+          switch (error.response.status) {
+            case 401:
+              toast('Wpisz poprawną nazwę użytkownika i hasło!', {
+                type: 'error',
+              });
+              break;
+            default:
+              toast('Wystąpił błąd!', {
+                type: 'error',
+              });
+              break;
+          }
+        } else {
+          toast('Wystąpił błąd!', {
+            type: 'error',
+          });
+        }
       });
     }
   }

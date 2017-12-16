@@ -55,7 +55,7 @@ db.questions.belongsToMany(db.users, {
   through: {
     model: db.users_answers,
   },
-})
+});
 
 module.exports = db;
 

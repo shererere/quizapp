@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
+import { toast } from 'react-toastify';
 import Header from '../Header/header.jsx';
 import Footer from '../Footer/footer.jsx';
 import Question from '../Question/question.jsx';
@@ -31,10 +32,13 @@ export default class QuizPage extends Component {
     }
   }
 
-  redirectIfUserSolvedQuiz() {
+  // TODO: rename this function
+  redirectUser() {
     if (this.state.usersAnswers.length > 0) {
+      toast('Nie możesz tego zobaczyć w tym momencie!', {
+        type: 'warning',
+      });
       this.props.history.push('/');
-      // TODO: show modal with message like "you already solved this quiz"
     }
   }
 
@@ -55,14 +59,16 @@ export default class QuizPage extends Component {
         usersAnswers: usersAnswers.data,
       });
     } catch (error) {
+      // TODO: error handling jak API będzie zwracało errory
       console.error(error);
     }
   }
 
   componentWillMount() {
+    // TODO: to też musi być zrobione jakoś inaczej
     this.redirectIfUserIsNotLogged().then(() => {
       this.callAPIEndpoints().then(() => {
-        this.redirectIfUserSolvedQuiz();
+        this.redirectUser();
       });
     });
   }
@@ -75,18 +81,25 @@ export default class QuizPage extends Component {
 
   solveQuiz() {
     const stateCopy = Object.assign({}, this.state);
+
+    // NOTE: tak btw to musi być async, żeby
+    // wszystkie odpowiedzi zdążyły się wysłać zanim user zostanie przekierowany na /
     for (let i = 0; i < stateCopy.selectedAnswers.length; i += 1) {
       axios.post('http://localhost:3000/api/v1/user/quiz/answer/', {
         questionid: stateCopy.selectedAnswers[i].id,
         userid: stateCopy.userid,
         quizid: stateCopy.quizid,
         answer: stateCopy.selectedAnswers[i].selection,
-      }).then((response) => {
-        console.log(response);
       }).catch((error) => {
+        // TODO: error handling jak API będzie zwracało errory
         console.log(error);
       });
     }
+
+    toast('Odpowiedzi zostały wysłane. Zostaniesz przeniesiony na stronę główną.', {
+      type: 'success',
+    });
+    this.props.history.push('/');
   }
 
   render() {

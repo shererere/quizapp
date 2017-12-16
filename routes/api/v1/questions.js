@@ -5,6 +5,8 @@ const db = require('../../../db');
 routes.get('/', function (req, res) {
   db.questions.findAll().then(function(result) {
     res.status(200).json(result);
+  }).catch(function (error) {
+    res.status(400).json({ messsage: 'Error 400' });
   });
 });
 
@@ -15,7 +17,7 @@ routes.post('/', function (req, res) {
       typeof(req.body.wrong_answer1) == 'undefined' ||
       typeof(req.body.wrong_answer2) == 'undefined' ||
       typeof(req.body.wrong_answer3) == 'undefined' ||
-      typeof(req.body.quizid) == 'undefined') {
+      typeof(req.body.quiz_id) == 'undefined') {
         res.status(400).json({ error: 'Missing parameters!' });
   } else {
     db.sequelize.sync().then(function() {
@@ -25,10 +27,12 @@ routes.post('/', function (req, res) {
         wrong_answer1: req.body.wrong_answer1,
         wrong_answer2: req.body.wrong_answer2,
         wrong_answer3: req.body.wrong_answer3,
-        quiz_id: req.body.quizid,
+        quiz_id: req.body.quiz_id,
       });
     }).then(function() {
       res.status(201).json({ message: 'Question added successfully' });
+    }).catch(function (error) {
+      res.status(400).json({ messsage: 'Error 400' });
     });
   }
 });
@@ -38,7 +42,7 @@ routes.delete('/', function(req, res) {
   if (typeof(req.body.id) == 'undefined') {
     res.status(400).json({ error: 'Missing parameters!' });
   } else {
-    db.questions.findOne({ 
+    db.questions.findOne({
       where: {
         id: req.body.id
       }
@@ -55,7 +59,8 @@ routes.delete('/', function(req, res) {
           res.status(200).json({ message: 'Question deleted successfully' });
         });
       }
-
+    }).catch(function (error) {
+      res.status(400).json({ messsage: 'Error 400' });
     });
   }
 });

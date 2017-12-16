@@ -6,6 +6,8 @@ const db = require('../../../db');
 routes.get('/', function (req, res) {
   db.users.findAll().then(function(result) {
     res.status(200).json(result);
+  }).catch(function (error) {
+    res.status(400).json({messsage: 'Error 400'});
   });
 });
 
@@ -20,6 +22,8 @@ routes.get('/:id', function (req, res) {
     },
   }).then(function (result) {
     res.status(200).json(result);
+  }).catch(function (error) {
+    res.status(400).json({ messsage: 'Error 400' });
   });
 });
 
@@ -39,9 +43,12 @@ routes.get('/:user/quiz/:quiz/answers', function (req, res) {
     }],
     where: {
         user_id: req.params.user,
+        quiz_id: req.params.quiz,
     },
   }).then(function (result) {
     res.status(200).json(result);
+  }).catch(function (error) {
+    res.status(400).json({ messsage: 'Error 400' });
   });
 });
 
@@ -53,6 +60,40 @@ routes.get('/division/:division', function (req, res) {
     },
   }).then(function (result) {
     res.status(200).json(result);
+  }).catch(function (error) {
+    res.status(400).json({ messsage: 'Error 400' });
+  });
+});
+
+// TODO: move to quiz ???
+// return all quizzes, that user finished
+routes.get('/:user/quizzes/finished', function (req, res) {
+  db.users_quizzes.findAll({
+    where: {
+      user_id: req.params.user,
+      finished: true,
+    },
+    attributes: ['quiz_id'],
+  }).then(function (result) {
+    res.status(200).json(result);
+  }).catch(function (error) {
+    res.status(400).json({ messsage: 'Error 400', content: error.message });
+  });
+});
+
+// TODO: move to quiz ???
+// return all quizzes, that are available for user
+routes.get('/:user/quizzes/available', function (req, res) {
+  db.users_quizzes.findAll({
+    where: {
+      user_id: req.params.user,
+      finished: false,
+    },
+    attributes: ['quiz_id'],
+  }).then(function (result) {
+    res.status(200).json(result);
+  }).catch(function (error) {
+    res.status(400).json({ messsage: 'Error 400', content: error.message });
   });
 });
 
@@ -68,8 +109,54 @@ routes.get('/:user/quizzes', function (req, res) {
     }],
   }).then(function (result) {
     res.status(200).json(result);
+  }).catch(function (error) {
+    res.status(400).json({ messsage: 'Error 400' });
   });
 });
+
+// check if user has finished the quiz
+routes.get('/:user/quiz/:quiz/finished', function (req, res) {
+  db.users_quizzes.findAll({
+    attributes: ['finished'],
+    where: {
+      user_id: req.params.user,
+      quiz_id: req.params.quiz,
+    },
+  }).then(function (result) {
+    res.status(200).json(result);
+  }).catch(function (error) {
+    res.status(400).json({ messsage: 'Error 400' });
+  });
+});
+
+// user finished a quiz
+routes.post('/quiz/finish', function(req, res) {
+  if (typeof (req.body.userid) == 'undefined' ||
+    typeof (req.body.quizid) == 'undefined') {
+    res.status(400).json({ error: 'Missing parameters!' });
+  } else {
+    db.sequelize.sync().then(function () {
+      db.users_quizzes.findOne({
+        where: {
+          user_id: req.body.userid,
+          quiz_id: req.body.quizid,
+        },
+      }).then(function(record) {
+        record.update({
+          finished: !record.finished,
+        },
+        {
+          fields: ['finished'],
+        });
+      });
+    }).then(function () {
+      res.status(201).json({ message: 'User finished quest successfully' });
+    }).catch(function (error) {
+      res.status(400).json({ messsage: 'Error 400' });
+    });
+  }
+});
+
 
 // answer to quiz's question
 routes.post('/quiz/answer', function(req, res) {
@@ -88,6 +175,8 @@ routes.post('/quiz/answer', function(req, res) {
       });
     }).then(function() {
       res.status(201).json({ message: 'User answered to question successfully' });
+    }).catch(function (error) {
+      res.status(400).json({ messsage: 'Error 400' });
     });
   }
 });
@@ -115,7 +204,8 @@ routes.delete('/', function(req, res) {
           res.status(200).json({ message: 'User deleted successfully' });
         });
       }
-
+    }).catch(function (error) {
+      res.status(400).json({ messsage: 'Error 400' });
     });
   }
 });
