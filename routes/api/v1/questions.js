@@ -6,7 +6,7 @@ routes.get('/', function (req, res) {
   db.questions.findAll().then(function(result) {
     res.status(200).json(result);
   }).catch(function (error) {
-    res.status(400).json({ messsage: 'Error 400' });
+    res.status(400).json({ messsage: 'Error 400', error: error });
   });
 });
 
@@ -32,7 +32,7 @@ routes.post('/', function (req, res) {
     }).then(function() {
       res.status(201).json({ message: 'Question added successfully' });
     }).catch(function (error) {
-      res.status(400).json({ messsage: 'Error 400' });
+      res.status(400).json({ messsage: 'Error 400', error: error });
     });
   }
 });
@@ -60,7 +60,7 @@ routes.delete('/', function(req, res) {
         });
       }
     }).catch(function (error) {
-      res.status(400).json({ messsage: 'Error 400' });
+      res.status(400).json({ messsage: 'Error 400', error: error });
     });
   }
 });

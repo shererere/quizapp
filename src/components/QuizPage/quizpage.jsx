@@ -17,7 +17,7 @@ export default class QuizPage extends Component {
       userid: jwt.decode(token),
       title: null,
       questions: null,
-      usersAnswers: null,
+      isFinished: null,
       selectedAnswers: [],
     };
 
@@ -34,7 +34,7 @@ export default class QuizPage extends Component {
 
   // TODO: rename this function
   redirectUser() {
-    if (this.state.usersAnswers.length > 0) {
+    if (this.state.isFinished === true) {
       toast('Nie możesz tego zobaczyć w tym momencie!', {
         type: 'warning',
       });
@@ -50,17 +50,21 @@ export default class QuizPage extends Component {
   async callAPIEndpoints() {
     try {
       const info = await axios.get(`http://localhost:3000/api/v1/quiz/${this.state.quizid}`);
-      const questions = await axios.get(`http://localhost:3000/api/v1/quiz/${this.state.quizid}/questions`);
-      const usersAnswers = await axios.get(`http://localhost:3000/api/v1/user/${this.state.userid}/quiz/${this.state.quizid}/answers`);
+      // TODO LIMIT
+      const questions = await axios.get(`http://localhost:3000/api/v1/quiz/${this.state.quizid}/questions/limit/10`);
+      const isFinished = await axios.get(`http://localhost:3000/api/v1/user/${this.state.userid}/quiz/${this.state.quizid}/finished`);
 
       this.setState({
         title: info.data[0].name,
         questions: questions.data,
-        usersAnswers: usersAnswers.data,
+        isFinished: isFinished.data[0].finished,
       });
     } catch (error) {
+      toast('Wystąpił błąd!', {
+        type: 'error',
+      });
       // TODO: error handling jak API będzie zwracało errory
-      console.error(error);
+      console.error(error); // eslint-disable-line no-console
     }
   }
 
@@ -91,8 +95,10 @@ export default class QuizPage extends Component {
         quizid: stateCopy.quizid,
         answer: stateCopy.selectedAnswers[i].selection,
       }).catch((error) => {
-        // TODO: error handling jak API będzie zwracało errory
-        console.log(error);
+        toast('Wystąpił błąd!', {
+          type: 'error',
+        });
+        console.log(error); // eslint-disable-line no-console
       });
     }
 
@@ -111,10 +117,10 @@ export default class QuizPage extends Component {
         <Question
           id={q.id}
           question={q.content}
-          answer1={q.correct_answer}
-          answer2={q.wrong_answer1}
-          answer3={q.wrong_answer2}
-          answer4={q.wrong_answer3}
+          answer1={q.answer0}
+          answer2={q.answer1}
+          answer3={q.answer2}
+          answer4={q.answer3}
           selectAnswer={this.selectAnswer}
           key={i}
         />);

@@ -6,7 +6,7 @@ routes.get('/', function (req, res) {
   db.quizzes.findAll().then(function(result) {
     res.status(200).json(result);
   }).catch(function (error) {
-    res.status(400).json({ messsage: 'Error 400' });
+    res.status(400).json({ messsage: 'Error 400', error: error });
   });
 });
 
@@ -19,7 +19,7 @@ routes.get('/:quiz', function (req, res) {
   }).then(function (result) {
     res.status(200).json(result);
   }).catch(function (error) {
-    res.status(400).json({ messsage: 'Error 400' });
+    res.status(400).json({ messsage: 'Error 400', error: error });
   });
 });
 
@@ -37,7 +37,7 @@ routes.post('/', function (req, res) {
     }).then(function() {
       res.status(201).json({ message: 'Quiz created successfully' });
     }).catch(function (error) {
-      res.status(400).json({ messsage: 'Error 400' });
+      res.status(400).json({ messsage: 'Error 400', error: error });
     });
   }
 });
@@ -55,24 +55,39 @@ routes.get('/:quiz/users', function (req, res) {
   }).then(function (result) {
     res.status(200).json(result);
   }).catch(function (error) {
-    res.status(400).json({ messsage: 'Error 400' });
+    res.status(400).json({ messsage: 'Error 400', error: error });
   });
 });
 
 // return all questions that belong to the quiz
-routes.get('/:quiz/questions', function (req,res) {
+routes.get('/:quiz/questions/limit/:limit', function (req,res) {
   db.questions.findAll({
+    limit: parseInt(req.params.limit),
+    order: [
+      db.sequelize.fn('RAND'),
+    ],
+    attributes: [
+      'content',
+      'created_at',
+      'updated_at',
+      'id',
+      'quiz_id',
+      ['correct_answer', 'answer0'],
+      ['wrong_answer1', 'answer1'],
+      ['wrong_answer2', 'answer2'],
+      ['wrong_answer3', 'answer3'],
+    ],
     include: [{
       model: db.quizzes,
-      attributes: [],
       where: {
         id: req.params.quiz,
       },
+      attributes: [],
     }],
   }).then(function (result) {
     res.status(200).json(result);
   }).catch(function (error) {
-    res.status(400).json({ messsage: 'Error 400' });
+    res.status(400).json({ messsage: 'Error 400', error: error });
   });
 });
 
@@ -90,7 +105,7 @@ routes.post('/assign', function(req, res) {
     }).then(function() {
       res.status(201).json({ message: 'Quiz assigned to user successfully' });
     }).catch(function (error) {
-      res.status(400).json({ messsage: 'Error 400' });
+      res.status(400).json({ messsage: 'Error 400', error: error });
     });
   }
 });
@@ -117,7 +132,7 @@ routes.delete('/unassign', function(req, res) {
           res.status(201).json({ message: 'Quiz unassigned from user successfully' });
         });
       }).catch(function (error) {
-        res.status(400).json({ messsage: 'Error 400' });
+        res.status(400).json({ messsage: 'Error 400', error: error });
       });
     });
   }
@@ -126,7 +141,7 @@ routes.delete('/unassign', function(req, res) {
 // remove quiz
 routes.delete('/', function(req, res) {
   if (typeof(req.body.id) == 'undefined') {
-    res.status(400).json({ error: 'Missing parameters!' });
+    res.status(400).json({ error: 'Missing parameters!', error: error });
   } else {
     db.quizzes.findOne({
       where: {
@@ -141,7 +156,7 @@ routes.delete('/', function(req, res) {
         res.status(200).json({ message: 'Quiz deleted successfully' });
       });
     }).catch(function (error) {
-      res.status(204).json({ messsage: 'Quiz not found' });
+      res.status(204).json({ messsage: 'Quiz not found', error: error });
     });
   }
 });

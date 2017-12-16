@@ -7,7 +7,7 @@ routes.get('/', function (req, res) {
   db.users.findAll().then(function(result) {
     res.status(200).json(result);
   }).catch(function (error) {
-    res.status(400).json({messsage: 'Error 400'});
+    res.status(400).json({ messsage: 'Error 400', error: error });
   });
 });
 
@@ -23,7 +23,7 @@ routes.get('/:id', function (req, res) {
   }).then(function (result) {
     res.status(200).json(result);
   }).catch(function (error) {
-    res.status(400).json({ messsage: 'Error 400' });
+    res.status(400).json({ messsage: 'Error 400', error: error });
   });
 });
 
@@ -48,7 +48,7 @@ routes.get('/:user/quiz/:quiz/answers', function (req, res) {
   }).then(function (result) {
     res.status(200).json(result);
   }).catch(function (error) {
-    res.status(400).json({ messsage: 'Error 400' });
+    res.status(400).json({ messsage: 'Error 400', error: error });
   });
 });
 
@@ -61,39 +61,53 @@ routes.get('/division/:division', function (req, res) {
   }).then(function (result) {
     res.status(200).json(result);
   }).catch(function (error) {
-    res.status(400).json({ messsage: 'Error 400' });
+    res.status(400).json({ messsage: 'Error 400', error: error });
   });
 });
 
-// TODO: move to quiz ???
 // return all quizzes, that user finished
 routes.get('/:user/quizzes/finished', function (req, res) {
-  db.users_quizzes.findAll({
+  db.users.findAll({
     where: {
-      user_id: req.params.user,
-      finished: true,
+      id: req.params.user,
     },
-    attributes: ['quiz_id'],
+    include: [{
+      model: db.quizzes,
+      through: {
+        where: {
+          finished: true,
+        },
+        attributes: [],
+      },
+    }],
+    attributes: [],
   }).then(function (result) {
-    res.status(200).json(result);
+    res.status(200).json(result[0].quizzes);
   }).catch(function (error) {
-    res.status(400).json({ messsage: 'Error 400', content: error.message });
+    res.status(400).json({ messsage: 'Error 400', error: error });
   });
 });
 
-// TODO: move to quiz ???
 // return all quizzes, that are available for user
 routes.get('/:user/quizzes/available', function (req, res) {
-  db.users_quizzes.findAll({
+  db.users.findAll({
     where: {
-      user_id: req.params.user,
-      finished: false,
+      id: req.params.user,
     },
-    attributes: ['quiz_id'],
+    include: [{
+      model: db.quizzes,
+      through: {
+        where: {
+          finished: false,
+        },
+        attributes: [],
+      },
+    }],
+    attributes: [],
   }).then(function (result) {
-    res.status(200).json(result);
+    res.status(200).json(result[0].quizzes);
   }).catch(function (error) {
-    res.status(400).json({ messsage: 'Error 400', content: error.message });
+    res.status(400).json({ messsage: 'Error 400', error: error });
   });
 });
 
@@ -110,7 +124,7 @@ routes.get('/:user/quizzes', function (req, res) {
   }).then(function (result) {
     res.status(200).json(result);
   }).catch(function (error) {
-    res.status(400).json({ messsage: 'Error 400' });
+    res.status(400).json({ messsage: 'Error 400', error: error });
   });
 });
 
@@ -125,7 +139,7 @@ routes.get('/:user/quiz/:quiz/finished', function (req, res) {
   }).then(function (result) {
     res.status(200).json(result);
   }).catch(function (error) {
-    res.status(400).json({ messsage: 'Error 400' });
+    res.status(400).json({ messsage: 'Error 400', error: error });
   });
 });
 
@@ -152,7 +166,7 @@ routes.post('/quiz/finish', function(req, res) {
     }).then(function () {
       res.status(201).json({ message: 'User finished quest successfully' });
     }).catch(function (error) {
-      res.status(400).json({ messsage: 'Error 400' });
+      res.status(400).json({ messsage: 'Error 400', error: error });
     });
   }
 });
@@ -176,7 +190,7 @@ routes.post('/quiz/answer', function(req, res) {
     }).then(function() {
       res.status(201).json({ message: 'User answered to question successfully' });
     }).catch(function (error) {
-      res.status(400).json({ messsage: 'Error 400' });
+      res.status(400).json({ messsage: 'Error 400', error: error });
     });
   }
 });
@@ -205,7 +219,7 @@ routes.delete('/', function(req, res) {
         });
       }
     }).catch(function (error) {
-      res.status(400).json({ messsage: 'Error 400' });
+      res.status(400).json({ messsage: 'Error 400', error: error });
     });
   }
 });
@@ -232,3 +246,24 @@ routes.delete('/', function(req, res) {
 // });
 
 module.exports = routes;
+
+// JUST IN CASE IN EMERGENCY
+// // TODO: move to quiz ???
+// // return all quizzes, that user finished
+// routes.get('/:user/quizzes/finished', function (req, res) {
+//   const xd = db.sequelize.query("SELECT q.*, uq.finished FROM quizzes q, users_quizzes uq WHERE uq.quiz_id = q.id AND uq.finished = 1 AND uq.user_id = '" + req.params.user + "'")
+//     .spread(function (results, metadata) {
+//       console.log(results);
+//       res.status(200).json(results);
+//     });
+// });
+
+// // TODO: move to quiz ???
+// // return all quizzes, that are available for user
+// routes.get('/:user/quizzes/available', function (req, res) {
+//   const xd = db.sequelize.query("SELECT q.*, uq.finished FROM quizzes q, users_quizzes uq WHERE uq.quiz_id = q.id AND uq.finished = 0 AND uq.user_id = '" + req.params.user + "'")
+//     .spread(function (results, metadata) {
+//       console.log(results);
+//       res.status(200).json(results);
+//     });
+// });

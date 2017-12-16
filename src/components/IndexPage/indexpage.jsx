@@ -48,7 +48,7 @@ export default class IndexPage extends Component {
       toast('Wystąpił błąd!', {
         type: 'error',
       });
-      console.error(error);
+      console.error(error); // eslint-disable-line no-console
     }
   }
 
@@ -59,34 +59,30 @@ export default class IndexPage extends Component {
   }
 
   render() {
-    let availableQuizzesComponent = null; // eslint-disable-line prefer-const
-    let finishedQuizzesComponent = null; // eslint-disable-line prefer-const
-    // let solvedQuizzes = []; // eslint-disable-line prefer-const
-    // let availableQuizzes = []; // eslint-disable-line prefer-const
+    let availableQuizzesComponent = null;
+    let finishedQuizzesComponent = null;
 
     if (this.state.availableQuizzes.length > 0) {
-      console.log('xd');
       availableQuizzesComponent = this.state.availableQuizzes.map(quiz =>
         <li
           className={styles.quiz}
-          key={quiz.quiz_id}
+          key={quiz.id}
           history={this.props.history}
           onClick={() => { this.props.history.push(`/quiz/${quiz.id}`); }}
         >
-          TODO: nazwa {quiz.name}
+          {quiz.name}
         </li>);
     }
 
     if (this.state.finishedQuizzes.length > 0) {
       finishedQuizzesComponent = this.state.finishedQuizzes.map(quiz =>
-
         <li
           className={styles.quiz}
-          key={quiz.quiz_id}
+          key={quiz.id}
           history={this.props.history}
-          onClick={() => { this.props.history.push(`/quiz/${quiz.id}`); }}
+          onClick={() => { toast('Nie możesz tego zobaczyć w tym momencie!', { type: 'warning' }); }}
         >
-          TODO: nazwa {quiz.name}
+          {quiz.name}
         </li>);
     }
 
