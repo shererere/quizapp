@@ -1,7 +1,10 @@
 const routes = require('express').Router();
 const db = require('../../../db');
 
-// return all quizzes
+/**
+ * Return all quizzes.
+ * @method
+ */
 routes.get('/', function (req, res) {
   db.quizzes.findAll().then(function(result) {
     res.status(200).json(result);
@@ -10,7 +13,11 @@ routes.get('/', function (req, res) {
   });
 });
 
-// return quiz info with id
+/**
+ * Return quiz info.
+ * @method
+ * @param {uuid} quiz - Quiz ID.
+ */
 routes.get('/:quiz', function (req, res) {
   db.quizzes.findAll({
     where: {
@@ -23,7 +30,12 @@ routes.get('/:quiz', function (req, res) {
   });
 });
 
-// add new quiz
+/**
+ * Add new quiz.
+ * @method
+ * @param {string} name - Quiz name.
+ * @param {int} size - Amount of questions that are randomly chosen for user.
+ */
 routes.post('/', function (req, res) {
   if (typeof(req.body.name) == 'undefined' ||
       typeof(req.body.size) == 'undefined') {
@@ -42,7 +54,41 @@ routes.post('/', function (req, res) {
   }
 });
 
-// return all users that take part in quiz
+/**
+ * Return all users that haven't finished the quiz yet.
+ * @method
+ * @param {uuid} quiz - Quiz ID.
+ */
+routes.get('/:quiz/users/solving', function (req, res) {
+  db.users.findAll({
+    attributes: {
+      exclude: ['password'],
+    },
+    include: [{
+      model: db.quizzes,
+      where: {
+        id: req.params.quiz,
+      },
+      through: {
+        where: {
+          finished: false,
+        },
+        attributes: [],
+      },
+      attributes: [],
+    }],
+  }).then(function (result) {
+    res.status(200).json(result);
+  }).catch(function (error) {
+    res.status(400).json({ messsage: 'Error 400', error: error });
+  });
+});
+
+/**
+ * Return all users that take part in quiz.
+ * @method
+ * @param {uuid} quiz - Quiz ID.
+ */
 routes.get('/:quiz/users', function (req, res) {
   db.users.findAll({
     include: [{
@@ -59,7 +105,39 @@ routes.get('/:quiz/users', function (req, res) {
   });
 });
 
-// return all questions that belong to the quiz
+/**
+ * Return all users that take part in quiz from given division.
+ * @method
+ * @param {uuid} quiz - Quiz ID.
+ * @param {string} division - Division.
+ */
+routes.get('/:quiz/users/division/:divisions', function (req, res) {
+  db.users.findAll({
+    where: {
+      division: {
+        [db.Sequelize.Op.like]: req.params.division,
+      },
+    },
+    include: [{
+      model: db.quizzes,
+      attributes: [],
+      where: {
+        id: req.params.quiz,
+      },
+    }],
+  }).then(function (result) {
+    res.status(200).json(result);
+  }).catch(function (error) {
+    res.status(400).json({ messsage: 'Error 400', error: error });
+  });
+});
+
+/**
+ * Return all questions that belong to the quiz.
+ * @method
+ * @param {uuid} quiz - Quiz ID.
+ * @param {int} limit - Amount of questions that are randomly chosen for user.
+ */
 routes.get('/:quiz/questions/limit/:limit', function (req,res) {
   db.questions.findAll({
     limit: parseInt(req.params.limit),
@@ -91,7 +169,12 @@ routes.get('/:quiz/questions/limit/:limit', function (req,res) {
   });
 });
 
-// assign (link) quiz to user
+/**
+ * Assign quiz to user.
+ * @method
+ * @param {uuid} quizid - Quiz ID.
+ * @param {uuid} userid - User ID.
+ */
 routes.post('/assign', function(req, res) {
   if (typeof(req.body.quizid) == 'undefined' ||
       typeof(req.body.userid) == 'undefined') {
@@ -110,7 +193,12 @@ routes.post('/assign', function(req, res) {
   }
 });
 
-// unassign (unlink) quiz from user
+/**
+ * Unassign quiz from user.
+ * @method
+ * @param {uuid} quizid - Quiz ID.
+ * @param {uuid} userid - User ID.
+ */
 routes.delete('/unassign', function(req, res) {
   if (typeof(req.body.quizid) == 'undefined' ||
       typeof(req.body.userid) == 'undefined') {
@@ -138,19 +226,23 @@ routes.delete('/unassign', function(req, res) {
   }
 });
 
-// remove quiz
+/**
+ * Remove quiz.
+ * @method
+ * @param {uuid} quizid - Quiz ID.
+ */
 routes.delete('/', function(req, res) {
-  if (typeof(req.body.id) == 'undefined') {
+  if (typeof(req.body.quizid) == 'undefined') {
     res.status(400).json({ error: 'Missing parameters!', error: error });
   } else {
     db.quizzes.findOne({
       where: {
-        id: req.body.id
+        id: req.body.quizid
       }
     }).then(function(result) {
       db.quizzes.destroy({
         where: {
-          id: req.body.id,
+          id: req.body.quizid,
         }
       }).then(function() {
         res.status(200).json({ message: 'Quiz deleted successfully' });

@@ -1,17 +1,47 @@
 const routes = require('express').Router();
 const db = require('../../../db');
 
+/**
+ * Return all divisions.
+ * @method
+ */
+routes.get('/division/all', function (req, res) {
+  db.users.findAll({
+    group: ['division'],
+    attributes: ['division'],
+  }).then(function (result) {
+    let divisions = [];
 
-// return all users
+    result.forEach(function(d) {
+      divisions.push(d.division);
+    });
+    res.status(200).json(divisions);
+  }).catch(function (error) {
+    res.status(400).json({ messsage: 'Error 400', error: error });
+  });
+});
+
+/**
+ * Return all users.
+ * @method
+ */
 routes.get('/', function (req, res) {
-  db.users.findAll().then(function(result) {
+  db.users.findAll({
+    attributes: {
+      exclude: ['password'],
+    },
+  }).then(function(result) {
     res.status(200).json(result);
   }).catch(function (error) {
     res.status(400).json({ messsage: 'Error 400', error: error });
   });
 });
 
-// return user with id
+/**
+ * Return one user.
+ * @method
+ * @param {uuid} id - User ID.
+ */
 routes.get('/:id', function (req, res) {
   db.users.findAll({
     where: {
@@ -27,7 +57,31 @@ routes.get('/:id', function (req, res) {
   });
 });
 
-// show user's answers
+/**
+ * Return if user is admin.
+ * @method
+ * @param {uuid} id - User ID.
+ */
+routes.get('/:id/admin', function (req, res) {
+  db.users.findAndCountAll({
+    where: {
+      id: req.params.id,
+      role: 'admin',
+    },
+  }).then(function (result) {
+    res.status(200).json(result.count);
+  }).catch(function (error) {
+    res.status(400).json({ messsage: 'Error 400', error: error });
+  });
+});
+
+// NOTE: this route should return 204 no content if result is []
+/**
+ * Return user's answers to a specific quiz.
+ * @method
+ * @param {uuid} user_id - User ID.
+ * @param {uuid} quiz_id - Quiz ID.
+ */
 routes.get('/:user/quiz/:quiz/answers', function (req, res) {
   db.users_answers.findAll({
     include: [{
@@ -52,11 +106,96 @@ routes.get('/:user/quiz/:quiz/answers', function (req, res) {
   });
 });
 
-// return users that belong to the division
+// NOTE: this route should return 204 no content if result is []
+/**
+ * Return number of user's correct answers.
+ * @method
+ * @param {uuid} user_id - User ID.
+ * @param {uuid} quiz_id - Quiz ID.
+ */
+routes.get('/:user/quiz/:quiz/answers/correct', function (req, res) {
+  db.users_answers.findAndCountAll({
+    where: {
+      answer: 0,
+      user_id: req.params.user,
+      quiz_id: req.params.quiz,
+    },
+  }).then(function (result) {
+    res.status(200).json(result.count);
+  }).catch(function (error) {
+    res.status(400).json({ messsage: 'Error 400', error: error });
+  });
+});
+
+/**
+ * Return number of user's correct answers.
+ * @method
+ * @param {uuid} user_id - User ID.
+ * @param {uuid} quiz_id - Quiz ID.
+ */
+routes.get('/:user/quiz/:quiz/questions', function (req, res) {
+  db.questions.findAll({
+    attributes: [
+      'content',
+      'created_at',
+      'updated_at',
+      'id',
+      'quiz_id',
+      ['correct_answer', 'answer0'],
+      ['wrong_answer1', 'answer1'],
+      ['wrong_answer2', 'answer2'],
+      ['wrong_answer3', 'answer3'],
+    ],
+    include: [{
+      attributes: [],
+      model: db.users,
+      where: {
+        id: req.params.user,
+      },
+    }],
+    where: {
+      quiz_id: req.params.quiz,
+    }
+  }).then(function (result) {
+    res.status(200).json(result);
+  }).catch(function (error) {
+    res.status(400).json({ messsage: 'Error 400', error: error.message });
+  });
+});
+
+// NOTE: this route should return 204 no content if result is []
+/**
+ * Return user's answer to a specific question.
+ * @method
+ * @param {uuid} user_id - User ID.
+ * @param {uuid} question_id - Question ID.
+ */
+routes.get('/:user/question/:question/answer', function (req, res) {
+  db.users_answers.findAll({
+    where: {
+      question_id: req.params.question,
+      user_id: req.params.user,
+    },
+    attributes: ['answer'],
+  }).then(function (result) {
+    res.status(200).json(result);
+  }).catch(function (error) {
+    res.status(400).json({ messsage: 'Error 400', error: error });
+  });
+});
+
+// NOTE: this route should return 204 no content if result is []
+/**
+ * Return users that belongs to the division.
+ * @method
+ * @param {string} division - Division.
+ */
 routes.get('/division/:division', function (req, res) {
   db.users.findAll({
     where: {
-      division: req.params.division,
+      division: {
+        [db.Sequelize.Op.like]: req.params.division,
+      },
     },
   }).then(function (result) {
     res.status(200).json(result);
@@ -65,7 +204,13 @@ routes.get('/division/:division', function (req, res) {
   });
 });
 
-// return all quizzes, that user finished
+
+
+/**
+ * Return user's finished quizzes.
+ * @method
+ * @param {uuid} user - User ID.
+ */
 routes.get('/:user/quizzes/finished', function (req, res) {
   db.users.findAll({
     where: {
@@ -88,7 +233,11 @@ routes.get('/:user/quizzes/finished', function (req, res) {
   });
 });
 
-// return all quizzes, that are available for user
+/**
+ * Return user's available quizzes.
+ * @method
+ * @param {uuid} user - User ID.
+ */
 routes.get('/:user/quizzes/available', function (req, res) {
   db.users.findAll({
     where: {
@@ -111,7 +260,11 @@ routes.get('/:user/quizzes/available', function (req, res) {
   });
 });
 
-// return all quizzes, that user takes part in
+/**
+ * Return quizzes that user takes part in.
+ * @method
+ * @param {uuid} user - User ID.
+ */
 routes.get('/:user/quizzes', function (req, res) {
   db.quizzes.findAll({
     include: [{
@@ -128,7 +281,12 @@ routes.get('/:user/quizzes', function (req, res) {
   });
 });
 
-// check if user has finished the quiz
+/**
+ * Check if user has finished the quiz.
+ * @method
+ * @param {uuid} user - User ID.
+ * @param {uuid} quiz - Quiz ID.
+ */
 routes.get('/:user/quiz/:quiz/finished', function (req, res) {
   db.users_quizzes.findAll({
     attributes: ['finished'],
@@ -143,7 +301,12 @@ routes.get('/:user/quiz/:quiz/finished', function (req, res) {
   });
 });
 
-// user finished a quiz
+/**
+ * Toggle "finish" of user's quiz.
+ * @method
+ * @param {uuid} userid - User ID.
+ * @param {uuid} quizid - Quiz ID.
+ */
 routes.post('/quiz/finish', function(req, res) {
   if (typeof (req.body.userid) == 'undefined' ||
     typeof (req.body.quizid) == 'undefined') {
@@ -164,15 +327,21 @@ routes.post('/quiz/finish', function(req, res) {
         });
       });
     }).then(function () {
-      res.status(201).json({ message: 'User finished quest successfully' });
+      res.status(201).json({ message: 'User finished quiz successfully' });
     }).catch(function (error) {
       res.status(400).json({ messsage: 'Error 400', error: error });
     });
   }
 });
 
-
-// answer to quiz's question
+/**
+ * Answer to quiz question.
+ * @method
+ * @param {uuid} questionid - Question ID.
+ * @param {uuid} userid - User ID.
+ * @param {uuid} quizid - Quiz ID.
+ * @param {int} answer - {0 (correct), 1, 2, 3}.
+ */
 routes.post('/quiz/answer', function(req, res) {
   if (typeof(req.body.questionid) == 'undefined' ||
       typeof(req.body.userid) == 'undefined' ||
@@ -195,15 +364,19 @@ routes.post('/quiz/answer', function(req, res) {
   }
 });
 
-
-// delete user from db
+/**
+ * Delete user.
+ * @method
+ * @param {uuid} questionid - Question ID.
+ * @param {uuid} userid - User ID.
+ */
 routes.delete('/', function(req, res) {
-  if (typeof(req.body.id) == 'undefined') {
+  if (typeof(req.body.userid) == 'undefined') {
     res.status(400).json({ error: 'Missing parameters!' });
   } else {
     db.users.findOne({
       where: {
-        id: req.body.id
+        id: req.body.userid
       }
     }).then(function(result) {
       if (result == null) {
@@ -212,7 +385,7 @@ routes.delete('/', function(req, res) {
       } else {
         db.users.destroy({
           where: {
-            id: req.body.id,
+            id: req.body.userid,
           }
         }).then(function() {
           res.status(200).json({ message: 'User deleted successfully' });
