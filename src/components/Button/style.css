@@ -1,39 +1,9 @@
-.main {
-  padding: 12px;
-}
-.wrapper {
-  max-width: 1000px;
-  margin: 0 auto;
-}
-
-.quizTitle {
-  text-align: center;
-  font-weight: 700;
-  font-size: 36px;
-  margin: 36px 0;
-}
-
-/* ??? */
-.result {
-  font-size: 24px;
-  text-align: center;
-  margin: 48px 0 28px 0;
-}
-
-.questionList {
-
-}
-
-.questionList > section {
-  margin: 32px 0;
-}
-
 .button {
   display: inline-block;
   font-family: "Roboto", sans-serif;
   font-size: 14px;
   outline: 0;
-  margin: 32px auto 0 auto;
+  margin: 32px 0 0 0;
   padding: 14px 24px 12px 24px; /* bo krzywo jest */
   background-color: transparent;
   color: #2C2C2C;
@@ -49,7 +19,11 @@
   -webkit-appearance: none;
   -moz-appearance:    none;
   cursor: pointer;
+}
+
+.button_center {
   display: block;
+  margin: 32px auto 0 auto;
 }
 
 .button:hover {

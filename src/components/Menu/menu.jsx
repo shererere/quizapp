@@ -1,43 +1,18 @@
-import React, { Component } from 'react';
+import React from 'react';
 import styles from './style.css';
 
-export default class Menu extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      display: this.props.display,
-    };
-  }
+const Menu = (props) => {
+  const wrapperClasses = props.align === 'right' ? `${styles.wrapper_right}` : null;
+  const itemClasses = props.vertical === 'true'
+    ? `${styles.item} ${styles.item_vertical}`
+    : `${styles.item} ${styles.item_horizontal}`;
 
-  render() {
-    let classes = null;
-    const menuItems = this.props.items;
+  const items = props.items.map((item, index) =>
+    <li key={index} className={itemClasses} onClick={item.action}>
+      <span className={styles.text}>{item.label}</span>
+    </li>);
 
-    if (this.state.display === 'horizontal') {
-      classes = `${styles.menu} ${styles.menu_horizontal}`;
-    } else if (this.state.display === 'vertical') {
-      classes = `${styles.menu} ${styles.menu_vertical}`;
-    } else {
-      classes = `${styles.menu}`;
-    }
+  return <ul className={wrapperClasses}>{items}</ul>;
+};
 
-    const menuItemsElement = menuItems.map((item, index) =>
-      <li className={styles.menuitem} key={index}>
-        <a href={item.link}>
-          {item.name}
-        </a>
-      </li>);
-
-    // TODO: WTF JUST HAPPENED ABOVE THIS LINE.
-    // FUCKING PARENTHESIS CHAR HAVE TO BE IN THE SAME LINE AS END OF THIS SHITTY ELEMENT.
-    // FUCK ESLINT, SERIOUSLY
-
-    return (
-      <nav className={classes}>
-        <ul>
-          {menuItemsElement}
-        </ul>
-      </nav>
-    );
-  }
-}
+export default Menu;

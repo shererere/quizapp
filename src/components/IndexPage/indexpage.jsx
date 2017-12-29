@@ -3,13 +3,13 @@ import axios from 'axios';
 import jwt from 'jsonwebtoken';
 import { toast } from 'react-toastify';
 import Header from '../Header/header.jsx';
+import Menu from '../Menu/menu.jsx';
 import Footer from '../Footer/footer.jsx';
 import styles from './style.css';
 
 export default class IndexPage extends Component {
   constructor(props) {
     super(props);
-
     const token = localStorage.getItem('token');
 
     this.state = {
@@ -52,10 +52,22 @@ export default class IndexPage extends Component {
     }
   }
 
-  componentWillMount() {
+  // TODO: no idea czy `did` czy `will`
+  componentDidMount() {
     this.redirectIfUserIsNotLogged().then(() => {
       this.callAPIEndpoints();
     });
+  }
+
+  async handleQuizPermission(quizId) {
+    const solvingUsers = await axios.get(`http://localhost:3000/api/v1/quiz/${quizId}/users/solving`);
+    const isFinished = await axios.get(`http://localhost:3000/api/v1/user/${this.state.userid}/quiz/${quizId}/finished`);
+
+    if (isFinished.data[0].finished === true && solvingUsers.data.length !== 0) {
+      toast('Nie możesz tego zobaczyć w tym momencie!', { type: 'warning' });
+    } else {
+      this.props.history.push(`/quiz/${quizId}`);
+    }
   }
 
   render() {
@@ -68,7 +80,7 @@ export default class IndexPage extends Component {
           className={styles.quiz}
           key={quiz.id}
           history={this.props.history}
-          onClick={() => { this.props.history.push(`/quiz/${quiz.id}`); }}
+          onClick={() => this.handleQuizPermission(quiz.id)}
         >
           {quiz.name}
         </li>);
@@ -80,18 +92,24 @@ export default class IndexPage extends Component {
           className={styles.quiz}
           key={quiz.id}
           history={this.props.history}
-          onClick={() => { toast('Nie możesz tego zobaczyć w tym momencie!', { type: 'warning' }); }}
+          onClick={() => this.handleQuizPermission(quiz.id)}
         >
           {quiz.name}
         </li>);
     }
 
-    const menuComponent = <span onClick={this.logoutUser}>logout</span>;
+    const menuItems = [
+      {
+        label: 'Wyloguj',
+        action: this.logoutUser,
+      },
+    ];
+    const menuComponent = <Menu items={menuItems} fix="false" align="right" />;
 
     return (
       <main className={styles.main}>
         <Header menu={menuComponent} />
-          <div className={styles.container}>
+          <div className={styles.wrapper}>
             <h2 className={styles.logged}>
               Zalogowany jako {this.state.username}
             </h2>

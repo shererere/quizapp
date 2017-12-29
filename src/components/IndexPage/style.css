@@ -2,7 +2,7 @@
   padding: 12px;
 }
 
-.container {
+.wrapper {
   max-width: 1000px;
   margin: 0 auto;
 }
@@ -18,7 +18,7 @@
 .subtitle {
   font-size: 24px;
   text-align: center;
-  margin: 48px 0;
+  margin: 48px 0 28px 0;
 }
 
 .quizzesList {

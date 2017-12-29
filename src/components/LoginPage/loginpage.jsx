@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import Header from '../Header/header.jsx';
+import Button from '../Button/button.jsx';
 import Footer from '../Footer/footer.jsx';
 import styles from './style.css';
 
@@ -80,7 +81,7 @@ export default class MainPage extends Component {
       <main className={styles.main}>
         <div className={styles.background}></div>
         <div className={styles.container}>
-          <Header align='center' />
+          <Header center="true" />
           <div className={styles.box}>
             <form className={styles.formcontainer}>
               <input
@@ -95,8 +96,7 @@ export default class MainPage extends Component {
                 placeholder="Hasło"
                 onChange={this.handlePassword}
               />
-
-              <button className={styles.button} onClick={this.loginUser}>Zaloguj!</button>
+              <Button text="Zaloguj!" action={this.loginUser} />
             </form>
           </div>
           <Footer />

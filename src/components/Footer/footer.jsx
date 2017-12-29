@@ -1,12 +1,9 @@
-import React, { Component } from 'react';
+import React from 'react';
 import styles from './style.css';
 
-export default class Footer extends Component {
-  render() {
-    return (
-      <footer className={styles.footer}>
-        <p>Made by Mateusz Żochowski & Rafał Spiżewski</p>
-      </footer>
-    );
-  }
-}
+const Footer = () =>
+  <footer className={styles.footer}>
+    Made by Mateusz Żochowski & Rafał Spiżewski
+  </footer>;
+
+export default Footer;

@@ -1,29 +1,64 @@
-.menu {
+.wrapper {
+  display: inline-block;
   height: 100%;
-  float: right;
+  margin: 0;
+  padding: 0;
 }
 
-.menu ul {
-  height: 100%;
+.wrapper_right {
+  right: 0;
+  position: absolute;
+  top: 0;
+  bottom: 0;
 }
 
-.menu a {
-  color: inherit;
-  text-decoration: none;
+/* .wrapper_fix { */
+/*   transform: translateY(-50%); */
+/* } */
+
+.item {
+  font-size: 18px;
+  padding: 6px;
+  position: relative;
+  cursor: pointer;
 }
 
-.menu_horizontal .menuitem {
+.item > .text {
+  position: relative;
+}
+
+.item > .text:before {
+  content: "";
+  position: absolute;
+  width: 96%;
+  height: 1px;
+  bottom: -3px;
+  left: 0;
+  right: 0;
+  margin: auto;
+  /* TODO: ten kolor jest randomowy, do zmiany */
+  background-color: #12DB9A;
+  visibility: hidden;
+  -webkit-transform: scaleX(0);
+  transform: scaleX(0);
+  -webkit-transition: all 0.3s ease-in-out 0s;
+  transition: all 0.3s ease-in-out 0s;
+}
+
+.item:hover > .text:before {
+  visibility: visible;
+  transform: scaleX(1);
+  -webkit-transform: scaleX(1);
+}
+
+.item_vertical {
+  display: block;
+  margin: 12px 0;
+}
+
+.item_horizontal {
   display: inline-block;
   margin: 0 12px;
-}
-
-.menu_vertical .menuitem {
-  display: block;
-  margin: 12px;
-}
-
-.menuitem {
-  font-size: 18px;
-  padding: 12px;
-  line-height: 40px;
+  top: 50%;
+  transform: translateY(-50%);
 }
