@@ -1,5 +1,4 @@
-.main {
-}
+.wrapper {}
 
 .nav {
 	position: fixed;
@@ -10,8 +9,35 @@
 	background: #eaeaea;
 }
 
+.logo {
+  font-size: 2.85em;
+  text-align: center;
+}
+
 .menu {
-	position: relative;
-	top: 200px;
-	left: 15px;
+  margin: 48px 0 0 12px;
+	/* position: relative; */
+	/* top: 200px; */
+	/* left: 15px; */
+}
+
+.content {
+  width: calc(100vw - 224px);
+  height: calc(100vh - 12px);
+  position: absolute;
+  left: 212px;
+  top: 12px;
+}
+
+.list {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.listItem {
+  padding: 16px;
+  background: #e5e5e5;
+  margin: 4px 0;
+  border-left: 5px solid;
+  cursor: pointer;
 }
