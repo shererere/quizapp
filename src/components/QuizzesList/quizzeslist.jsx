@@ -9,6 +9,8 @@ export default class QuizzesList extends Component {
     this.state = {
       quizzes: [],
     };
+
+    this.onClickHandler = this.onClickHandler.bind(this);
   }
 
   async getQuizzes() {
@@ -16,6 +18,10 @@ export default class QuizzesList extends Component {
     this.setState({
       quizzes: quizzes.data,
     });
+  }
+
+  onClickHandler(id) {
+    this.props.changeId(id);
   }
 
   componentDidMount() {
@@ -26,7 +32,7 @@ export default class QuizzesList extends Component {
     let quizzesComponent = null;
     if (this.state.quizzes.length > 0) {
       quizzesComponent = this.state.quizzes.map(quiz =>
-        <li key={quiz.id} className={styles.item}>
+        <li key={quiz.id} className={styles.item} onClick={() => { this.onClickHandler(quiz.id); }}>
           {quiz.name}
         </li>);
     }

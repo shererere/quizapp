@@ -30,13 +30,11 @@ export default class UsersList extends Component {
   }
 
   deleteUser(userid) {
-    console.log(this.users);
     axios.delete('http://localhost:3000/api/v1/user/', {
       data: {
         userid,
       },
-    }).then((response) => {
-      console.log(response);
+    }).then(() => {
       this.getUsers();
       toast('Użytkownik został usunięty pomyślnie.', {
         type: 'success',
@@ -49,7 +47,7 @@ export default class UsersList extends Component {
   }
 
   assignUserToQuiz(userid) {
-    console.log(this.users);
+    console.log(this.props);
     console.log(userid);
   }
 
@@ -58,7 +56,7 @@ export default class UsersList extends Component {
     if (this.state.users.length > 0) {
       usersComponent = this.state.users.map(user =>
         <li key={user.id} className={styles.item}>
-          {user.username}
+          {user.username} --- {user.division}
           <div className={styles.menuWrapper}>
             <span onClick={() => { this.assignUserToQuiz(user.id); }}>
               <Icon icon="plus" width="24px" height="24px" fillcolor="black" />

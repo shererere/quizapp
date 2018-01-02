@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import QuizzesList from '../QuizzesList/quizzeslist.jsx';
+import Input from '../Input/input.jsx';
+import Button from '../Button/button.jsx';
 
-export default class AdminQuizzesPage extends Component {
+export default class AddUser extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -52,9 +53,22 @@ export default class AdminQuizzesPage extends Component {
 
   render() {
     return (
-      <div>
-        <QuizzesList getQuizzes={this.getQuizzes} changeId={this.props.changeId} />
-      </div>
+      <form>
+        <Input
+          type="text"
+          placeholder="Nazwa"
+          onChange={this.handleName}
+          border="true"
+        />
+        <Input
+          type="number"
+          placeholder="Ilość losowanych pytań"
+          onChange={this.handleSize}
+          border="true"
+          min="1"
+        />
+        <Button text="Dodaj!" action={this.addQuiz} />
+      </form>
     );
   }
 }

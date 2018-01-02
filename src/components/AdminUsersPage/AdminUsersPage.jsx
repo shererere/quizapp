@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 // import axios from 'axios';
-import Button from '../Button/button.jsx';
+// import { toast } from 'react-toastify';
+// import Button from '../Button/button.jsx';
 import UsersList from '../UsersList/userslist.jsx';
 
 export default class AdminUsersPage extends Component {
@@ -8,9 +9,9 @@ export default class AdminUsersPage extends Component {
     super(props);
     this.state = {
       quizzes: [],
-      divisions: [],
-      quizid: '',
-      division: '',
+      // divisions: [],
+      // quizid: '',
+      // division: '',
     };
 
     // this.filter = this.filter.bind(this);
@@ -90,9 +91,9 @@ export default class AdminUsersPage extends Component {
           </select>
           <Button text="Filtruj" />
         </form> */}
-        <Button
+        {/* <Button
           text="Pokaż filtry"
-        />
+        /> */}
         <UsersList quizid={this.state.quizid} division={this.state.division} />
       </div>
     );

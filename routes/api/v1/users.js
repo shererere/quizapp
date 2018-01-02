@@ -1,4 +1,5 @@
 const routes = require('express').Router();
+const bCrypt = require('bcrypt-nodejs');
 const db = require('../../../db');
 
 /**
@@ -367,7 +368,6 @@ routes.post('/quiz/answer', function(req, res) {
 /**
  * Delete user.
  * @method
- * @param {uuid} questionid - Question ID.
  * @param {uuid} userid - User ID.
  */
 routes.delete('/', function(req, res) {
@@ -440,3 +440,53 @@ module.exports = routes;
 //       res.status(200).json(results);
 //     });
 // });
+
+
+/**
+ * Register user.
+ * @method
+ * @param {string} username - Username.
+ * @param {string} password - Password.
+ * @param {string} division - Division name
+ * @param {enum} role - 'user' or 'admin'
+ */
+routes.post('/register', function (req, res) {
+  var generateHash = function (password) {
+    return bCrypt.hashSync(password, bCrypt.genSaltSync(8), null);
+  };
+
+  if (typeof (req.body.username) == 'undefined' ||
+    typeof (req.body.password) == 'undefined' ||
+    typeof (req.body.division) == 'undefined' ||
+    typeof (req.body.role) == 'undefined') {
+    res.status(400).json({ error: 'Missing parameters!' });
+  } else {
+    db.users.findOne({
+      where: {
+        username: req.body.username
+      }
+    }).then(function (user) {
+      if (user) {
+        res.status(400).json({ messsage: 'User exists' });
+      } else {
+        var userPassword = generateHash(req.body.password);
+        var data = {
+          username: req.body.username,
+          password: userPassword,
+          division: req.body.division,
+          role: req.body.role,
+        };
+
+        db.users.create(data).then(function (newUser, created) {
+          if (!newUser) {
+            res.status(400).json({ messsage: 'Unexpected error' });
+          }
+
+          if (newUser) {
+            res.status(201).json({ messsage: 'User created' });
+          }
+        });
+      }
+    });
+  }
+});

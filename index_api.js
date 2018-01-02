@@ -43,7 +43,7 @@ var jwtOptions = {
 }
 
 var strategy = new JwtStrategy(jwtOptions, function(jwt_payload, next) {
-  console.log(jwt_payload);
+  // console.log(jwt_payload);
   var user = db.users.findOne({
     where: {
       id: jwt_payload.id,
@@ -103,86 +103,6 @@ app.post("/login", function(req, res) {
 //   });
 // }));
 
-// passport.use('local-register', new LocalStrategy(
-//   {
-//     passReqToCallback: true
-//   },
-
-//   function(req, username, password, done) {
-//     var generateHash = function(password) {
-//       return bCrypt.hashSync(password, bCrypt.genSaltSync(8), null);
-//     };
-
-//     db.users.findOne({
-//       where: {
-//         username: username
-//       }
-//     }).then(function(user) {
-//       if (user) {
-//         return done(null, false, {
-//           message: 'User with this name exists'
-//         });
-//       } else {
-//         var userPassword = generateHash(password);
-//         var data = {
-//           username: username,
-//           password: userPassword,
-//           division: req.body.division,
-//           role: req.body.role,
-//         };
-
-//         db.users.create(data).then(function(newUser, created) {
-//           if (!newUser) {
-//             return done(null, false);
-//           }
-
-//           if (newUser) {
-//             return done(null, newUser);
-//           }
-//         });
-//       }
-//     });
-
-//   }
-// ));
-
-// passport.use('local-login', new LocalStrategy(
-//   {
-//     passReqToCallback: true
-//   },
-//   function(req, username, password, done) {
-//     var isPasswordValid = function(userpass, password) {
-//       return bCrypt.compareSync(password, userpass);
-//     }
-
-//     db.users.findOne({
-//       where: {
-//         username: username,
-//       }
-//     }).then(function(user) {
-//       if (!user) {
-//         return done(null, false, {
-//           message: 'User doesn\'t exists',
-//         });
-//       }
-
-//       if (!isPasswordValid(user.password, password)) {
-//         return done(null, false, {
-//           message: 'Incorrect password'
-//         });
-//       }
-
-//       return done(null, user);
-//     }).catch(function(err) {
-//       console.log('Error: ' + err);
-
-//       return done(null, false, {
-//         message: 'Something went wrong'
-//       });
-//     });
-//   }
-// ));
-
 passport.serializeUser(function(user, done) {
   done(null, user.id);
 });
@@ -201,14 +121,10 @@ app.get('/', function (req, res) {
   res.send('Hello World!');
 });
 
-app.post('/register',
-  passport.authenticate('local-register', { successRedirect: '/',
-                                            failureRedirect: '/register' })
-);
-
-app.post('/login',
-  passport.authenticate('jwt-login', { successRedirect: '/',
-                                   failureRedirect: '/login' })
+app.post('/test', passport.authenticate('jwt', { session: false }),
+  function (req, res) {
+    res.json({ message: 'elo' });
+  }
 );
 
 db.sequelize.sync().then(function() {
@@ -216,7 +132,7 @@ db.sequelize.sync().then(function() {
 });
 
 app.listen(3000, function () {
-  console.log('Example app listening on port 3000!');
+  console.log('Quiz app API is listening on port 3000!');
 });
 
 

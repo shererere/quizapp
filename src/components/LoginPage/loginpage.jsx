@@ -30,7 +30,6 @@ export default class MainPage extends Component {
   loginUser(e) {
     e.preventDefault();
 
-    // NOTE: chyba nie da się, żeby input był `null`
     if (this.state.username === '' && this.state.password === '') {
       toast('Wpisz poprawną nazwę uzytkownika i hasło!', {
         type: 'error',

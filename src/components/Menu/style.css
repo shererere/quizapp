@@ -18,38 +18,40 @@
 
 .item {
   font-size: 18px;
-  padding: 6px;
+  padding: 6px 0;
   position: relative;
   cursor: pointer;
 }
 
 .item > .text {
   position: relative;
+  display: block;
+  padding: 0 6px;
 }
 
 .item > .text:before {
   content: "";
   position: absolute;
-  width: 96%;
+  width: 0;
   height: 1px;
   bottom: -3px;
   left: 0;
-  right: 0;
+  right: 100%;
   margin: auto;
   /* TODO: ten kolor jest randomowy, do zmiany */
   background-color: #12DB9A;
   visibility: hidden;
-  -webkit-transform: scaleX(0);
-  transform: scaleX(0);
   -webkit-transition: all 0.3s ease-in-out 0s;
   transition: all 0.3s ease-in-out 0s;
 }
 
+
+
 .item:hover > .text:before {
   visibility: visible;
-  transform: scaleX(1);
-  -webkit-transform: scaleX(1);
+  width: 100%;
 }
+
 
 .item_vertical {
   display: block;
@@ -61,4 +63,18 @@
   margin: 0 12px;
   top: 50%;
   transform: translateY(-50%);
+}
+
+.submenu {
+  padding: 3px 0;
+  margin: 3px 0 6px 0;
+  background-color: #ddd;
+  -webkit-transition: all 0.3s ease duration timing-function delay;
+  -moz-transition: all 0.3s ease duration timing-function delay;
+  transition: all 0.3s ease duration timing-function delay;
+}
+
+.submenu .item {
+  font-size: 14px;
+  padding: 0 12px;
 }
