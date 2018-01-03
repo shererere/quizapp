@@ -91,6 +91,9 @@ routes.get('/:quiz/users/solving', function (req, res) {
  */
 routes.get('/:quiz/users', function (req, res) {
   db.users.findAll({
+    attributes: {
+      exclude: ['password'],
+    },
     include: [{
       model: db.quizzes,
       attributes: [],

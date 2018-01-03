@@ -302,6 +302,7 @@ routes.get('/:user/quiz/:quiz/finished', function (req, res) {
   });
 });
 
+
 /**
  * Toggle "finish" of user's quiz.
  * @method
@@ -359,6 +360,43 @@ routes.post('/quiz/answer', function(req, res) {
       });
     }).then(function() {
       res.status(201).json({ message: 'User answered to question successfully' });
+    }).catch(function (error) {
+      res.status(400).json({ messsage: 'Error 400', error: error });
+    });
+  }
+});
+
+/**
+ * Delete user answers from quiz.
+ * @method
+ * @param {uuid} userid - User ID.
+ * @param {uuid} quizid - Quiz ID.
+ */
+
+routes.delete('/quiz/answers', function(req, res) {
+  if (typeof(req.body.userid) === 'undefined' ||
+      typeof(req.body.quizid) === 'undefined' ) {
+        res.status(400).json({ error: 'Missing parameters!' });
+  } else {
+    db.users_answers.findAll({
+      where: {
+        user_id: req.body.userid,
+        quiz_id: req.body.quizid,
+      }
+    }).then(function (result) {
+      if (result == null) {
+        // TODO: no JSON response
+        res.status(204).json({ error: 'Answers not found' });
+      } else {
+        db.users_answers.destroy({
+          where: {
+            user_id: req.body.userid,
+            quiz_id: req.body.quizid,
+          }
+        }).then(function () {
+          res.status(200).json({ message: 'Answers deleted successfully' });
+        });
+      }
     }).catch(function (error) {
       res.status(400).json({ messsage: 'Error 400', error: error });
     });
