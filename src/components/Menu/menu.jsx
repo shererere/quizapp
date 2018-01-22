@@ -1,43 +1,41 @@
-import React, { Component } from 'react';
+import React from 'react';
 import styles from './style.css';
 
-export default class Menu extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      display: this.props.display,
-    };
-  }
+const Menu = (props) => {
+  const wrapperClasses = props.align === 'right' ? `${styles.wrapper_right}` : null;
+  const itemClasses = props.vertical === 'true'
+    ? `${styles.item} ${styles.item_vertical}`
+    : `${styles.item} ${styles.item_horizontal}`;
 
-  render() {
-    let classes = null;
-    const menuItems = this.props.items;
-
-    if (this.state.display === 'horizontal') {
-      classes = `${styles.menu} ${styles.menu_horizontal}`;
-    } else if (this.state.display === 'vertical') {
-      classes = `${styles.menu} ${styles.menu_vertical}`;
-    } else {
-      classes = `${styles.menu}`;
+  const items = props.items.map((item, index) => {
+    let submenuItems = null;
+    if (typeof item.submenu !== 'undefined') {
+      submenuItems = item.submenu.map((subitem, index1) =>
+        <li key={index1} className={itemClasses} onClick={() => {
+          if (typeof subitem.action !== 'undefined') {
+            subitem.action();
+          }
+        }}>{subitem.label}</li>);
     }
 
-    const menuItemsElement = menuItems.map((item, index) =>
-      <li className={styles.menuitem} key={index}>
-        <a href={item.link}>
-          {item.name}
-        </a>
-      </li>);
+    let submenuComponent = null;
+    if (submenuItems !== null) {
+      submenuComponent = <ul className={styles.submenu}>
+        {submenuItems}
+      </ul>;
+    }
 
-    // TODO: WTF JUST HAPPENED ABOVE THIS LINE.
-    // FUCKING PARENTHESIS CHAR HAVE TO BE IN THE SAME LINE AS END OF THIS SHITTY ELEMENT.
-    // FUCK ESLINT, SERIOUSLY
+    return <li key={index} className={itemClasses} onClick={() => {
+      if (typeof item.action !== 'undefined') {
+        item.action();
+      }
+    }}>
+      <span className={styles.text}>{item.label}</span>
+      {submenuComponent}
+    </li>;
+  });
 
-    return (
-      <nav className={classes}>
-        <ul>
-          {menuItemsElement}
-        </ul>
-      </nav>
-    );
-  }
-}
+  return <ul className={wrapperClasses}>{items}</ul>;
+};
+
+export default Menu;

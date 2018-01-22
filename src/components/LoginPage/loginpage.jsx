@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import Header from '../Header/header.jsx';
+import Button from '../Button/button.jsx';
 import Footer from '../Footer/footer.jsx';
 import styles from './style.css';
 
@@ -8,8 +10,8 @@ export default class MainPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      username: null,
-      password: null,
+      username: '',
+      password: '',
     };
 
     this.handleUsername = this.handleUsername.bind(this);
@@ -25,17 +27,52 @@ export default class MainPage extends Component {
     this.setState({ password: event.target.value });
   }
 
-  loginUser() {
-    axios.post('http://localhost:3000/login', {
-      username: this.state.username,
-      password: this.state.password,
-    }).then((response) => {
-      localStorage.setItem('token', response.data.token);
+  loginUser(e) {
+    e.preventDefault();
 
-      this.props.history.push('/panel');
-    }).catch((error) => {
-      console.log(error);
-    });
+    if (this.state.username === '' && this.state.password === '') {
+      toast('Wpisz poprawną nazwę uzytkownika i hasło!', {
+        type: 'error',
+      });
+    } else if (this.state.password === '') {
+      toast('Wpisz hasło!', {
+        type: 'error',
+      });
+    } else if (this.state.username === '') {
+      toast('Wpisz nazwę użytkownika!', {
+        type: 'error',
+      });
+    }
+
+    if (this.state.username !== '' && this.state.password !== '') {
+      axios.post('http://localhost:3000/login', {
+        username: this.state.username,
+        password: this.state.password,
+      }).then((response) => {
+        localStorage.setItem('token', response.data.token);
+
+        this.props.history.push('/');
+      }).catch((error) => {
+        if (error.response) {
+          switch (error.response.status) {
+            case 401:
+              toast('Wpisz poprawną nazwę użytkownika i hasło!', {
+                type: 'error',
+              });
+              break;
+            default:
+              toast('Wystąpił błąd!', {
+                type: 'error',
+              });
+              break;
+          }
+        } else {
+          toast('Wystąpił błąd!', {
+            type: 'error',
+          });
+        }
+      });
+    }
   }
 
   render() {
@@ -43,12 +80,22 @@ export default class MainPage extends Component {
       <main className={styles.main}>
         <div className={styles.background}></div>
         <div className={styles.container}>
-          <Header align='center' />
+          <Header center="true" />
           <div className={styles.box}>
             <form className={styles.formcontainer}>
-              <input className={styles.input} type="text" placeholder="Nazwa użytkownika" onChange={this.handleUsername} />
-              <input className={styles.input} type="password" placeholder="Hasło" onChange={this.handlePassword} />
-              <div className={styles.button} onClick={this.loginUser}>Zaloguj!</div>
+              <input
+                className={styles.input}
+                type="text"
+                placeholder="Nazwa użytkownika"
+                onChange={this.handleUsername}
+              />
+              <input
+                className={styles.input}
+                type="password"
+                placeholder="Hasło"
+                onChange={this.handlePassword}
+              />
+              <Button text="Zaloguj!" action={this.loginUser} />
             </form>
           </div>
           <Footer />

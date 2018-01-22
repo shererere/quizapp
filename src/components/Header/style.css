@@ -4,6 +4,7 @@
   color: #282424;
   font-family: "Roboto", sans-serif;
   text-align: left;
+  position: relative;
 }
 
 .header_center {
@@ -11,10 +12,13 @@
 }
 
 .logo {
-  font-size: 3.25em;
+  font-size: 3em;
   font-weight: 900;
   letter-spacing: -1px;
   line-height: 64px;
   display: inline;
   /* NOTE: no idea if it doesn't break anything. now it works xd */
+
+  color: #282424;
+  text-decoration: none;
 }

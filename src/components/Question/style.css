@@ -1,0 +1,17 @@
+.question {
+  padding: 20px 0;
+}
+
+.question__content {
+  background: #eaeaea;
+  display: block;
+  padding: 14px;
+  font-size: 1.15em;
+  font-weight: 600;
+}
+
+.image {
+  width: 100%;
+  text-align: center;
+  margin: 0 0 9px 0;
+}

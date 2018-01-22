@@ -1,0 +1,41 @@
+.item {
+  padding: 16px;
+  max-width: calc(100% - 32px);
+  background: #e5e5e5;
+  margin: 4px 0;
+  border-left: 5px solid;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.red {
+  border-color: hsl(0, 80%, 69%) !important;
+}
+.green {
+  border-color: hsl(140, 80%, 69%) !important;
+}
+
+.item:nth-of-type(8n + 1) {
+  border-color: hsl(0, 80%, 69%);
+}
+.item:nth-of-type(8n + 2) {
+  border-color: hsl(35, 80%, 69%);
+}
+.item:nth-of-type(8n + 3) {
+  border-color: hsl(60, 80%, 69%);
+}
+.item:nth-of-type(8n + 4) {
+  border-color: hsl(105, 80%, 69%);
+}
+.item:nth-of-type(8n + 5) {
+  border-color: hsl(140, 80%, 69%);
+}
+.item:nth-of-type(8n + 6) {
+  border-color: hsl(170, 80%, 69%);
+}
+.item:nth-of-type(8n + 7) {
+  border-color: hsl(205, 80%, 69%);
+}
+.item:nth-of-type(8n + 8) {
+  border-color: hsl(240, 80%, 69%);
+}

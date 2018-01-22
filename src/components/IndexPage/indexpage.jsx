@@ -1,80 +1,120 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import jwt from 'jsonwebtoken';
+import { toast } from 'react-toastify';
+import page from '../Page/page.jsx';
 import Header from '../Header/header.jsx';
 import Menu from '../Menu/menu.jsx';
 import Footer from '../Footer/footer.jsx';
 import styles from './style.css';
 
-export default class IndexPage extends Component {
+class IndexPage extends Component {
   constructor(props) {
     super(props);
 
-    const token = localStorage.getItem('token');
-
     this.state = {
-      userid: jwt.decode(token),
       username: null,
-      quizzes: null,
+      finishedQuizzes: [],
+      availableQuizzes: [],
     };
+
+    this.logoutUser = this.props.logoutUser.bind(this);
   }
 
   async callAPIEndpoints() {
-    let a = [];
-
     try {
-      const username = await axios.get(`http://localhost:3000/api/v1/user/${this.state.userid}`);
-      const quizzes = await axios.get(`http://localhost:3000/api/v1/user/${this.state.userid}/quizzes`);
-
-      a = {
-        username: username.data[0].username,
-        quizzes: quizzes.data,
-      };
-    } catch (error) {
-      console.error(error);
-    }
-
-    console.log(this.state);
-    return a;
-  }
-
-  componentDidMount() {
-    this.callAPIEndpoints().then((response) => {
-      console.log(response);
+      const username = await axios.get(`http://localhost:3000/api/v1/user/${this.props.userid}`);
+      const finishedQuizzes = await axios.get(`http://localhost:3000/api/v1/user/${this.props.userid}/quizzes/finished`);
+      const availableQuizzes = await axios.get(`http://localhost:3000/api/v1/user/${this.props.userid}/quizzes/available`);
 
       this.setState({
-        username: response.username,
-        quizzes: response.quizzes,
+        username: username.data[0].username,
+        finishedQuizzes: finishedQuizzes.data,
+        availableQuizzes: availableQuizzes.data,
       });
+    } catch (error) {
+      toast('Wystąpił błąd!', {
+        type: 'error',
+      });
+      console.error(error); // eslint-disable-line no-console
+    }
+  }
+
+  // TODO: no idea czy `did` czy `will`
+  componentDidMount() {
+    this.props.redirectIfUserIsNotLogged().then(() => {
+      this.callAPIEndpoints();
     });
   }
 
-  render() {
-    const menuItems = [
-      { name: 'Ustawienia', link: '#' },
-      { name: 'Wyloguj', link: '#' },
-    ];
-    const menuComponent = <Menu display='horizontal' items={menuItems} />;
-    let quizzesComponent = null;
+  async handleQuizPermission(quizId) {
+    const solvingUsers = await axios.get(`http://localhost:3000/api/v1/quiz/${quizId}/users/solving`);
+    const isFinished = await axios.get(`http://localhost:3000/api/v1/user/${this.props.userid}/quiz/${quizId}/finished`);
 
-    if (this.state.quizzes !== null) {
-      quizzesComponent = this.state.quizzes.map((quiz, index) =>
-        <li className={styles.quiz} key={index}>
-          <h2 className={styles.quizName}>{quiz.name}</h2>
+    if (isFinished.data[0].finished === true && solvingUsers.data.length !== 0) {
+      toast('Nie możesz tego zobaczyć w tym momencie!', { type: 'warning' });
+    } else {
+      this.props.history.push(`/quiz/${quizId}`);
+    }
+  }
+
+  render() {
+    let availableQuizzesComponent = null;
+    let finishedQuizzesComponent = null;
+
+    if (this.state.availableQuizzes.length > 0) {
+      availableQuizzesComponent = this.state.availableQuizzes.map(quiz =>
+        <li
+          className={styles.quiz}
+          key={quiz.id}
+          history={this.props.history}
+          onClick={() => this.handleQuizPermission(quiz.id)}
+        >
+          {quiz.name}
         </li>);
     }
 
+    if (this.state.finishedQuizzes.length > 0) {
+      finishedQuizzesComponent = this.state.finishedQuizzes.map(quiz =>
+        <li
+          className={styles.quiz}
+          key={quiz.id}
+          history={this.props.history}
+          onClick={() => this.handleQuizPermission(quiz.id)}
+        >
+          {quiz.name}
+        </li>);
+    }
+
+    const menuItems = [
+      {
+        label: 'Wyloguj',
+        action: this.logoutUser,
+      },
+    ];
+    const menuComponent = <Menu items={menuItems} fix="false" align="right" />;
+
     return (
       <main className={styles.main}>
-        <Header menu={menuComponent}/>
-          <div className={styles.container}>
-            <h2 className={styles.logged}>Zalogowany jako: {this.state.username}</h2>
+        <Header menu={menuComponent} />
+          <div className={styles.wrapper}>
+            <h2 className={styles.logged}>
+              Zalogowany jako {this.state.username}
+            </h2>
+
+            <h3 className={styles.subtitle}>Twoje nierozwiązane testy</h3>
+            <ul className={styles.quizzesList}>
+              {availableQuizzesComponent}
+            </ul>
+
+            <h3 className={styles.subtitle}>Twoje rozwiązane testy</h3>
+            <ul className={styles.quizzesList}>
+              {finishedQuizzesComponent}
+            </ul>
           </div>
-          <ul className={styles.quizzesList}>
-            {quizzesComponent}
-          </ul>
         <Footer />
       </main>
     );
   }
 }
+
+export default page(IndexPage);

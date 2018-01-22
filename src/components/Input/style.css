@@ -1,0 +1,25 @@
+.input {
+  display: block;
+  width: 230px;
+  margin: 24px auto;
+  padding: 10px 16px;
+  outline: 0;
+  transition: all .3s ease;
+  border-radius: 5px;
+}
+
+.border {
+  border: 1px solid #545454;
+}
+
+.border_transparent {
+  border: 1px solid transparent;
+}
+
+.input:active, .input:focus {
+  border: 1px solid #545454;
+}
+
+.input:invalid {
+  border: 1px solid red;
+}

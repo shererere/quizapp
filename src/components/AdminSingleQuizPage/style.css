@@ -1,0 +1,15 @@
+.col_2 {
+  width: calc(50% - 12px);
+  float: left;
+  margin-right: 12px;
+}
+
+.col_2:last-of-type {
+  margin-right: 0;
+  width: 50%;
+}
+
+.select {
+  border: 2px solid black;
+  border-radius: 7px;
+}

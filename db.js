@@ -55,10 +55,6 @@ db.questions.belongsToMany(db.users, {
   through: {
     model: db.users_answers,
   },
-})
+});
 
 module.exports = db;
-
-
-// hyhyhyhyyhyhy
-// https://lorenstewart.me/2016/09/12/sequelize-table-associations-joins/

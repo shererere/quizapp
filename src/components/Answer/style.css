@@ -1,0 +1,32 @@
+.answer {
+  box-sizing: border-box;
+  border-bottom: 1px solid #eaeaea;
+  padding: 10px;
+  margin: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.05em;
+  font-weight: 300;
+}
+
+.answer:hover {
+  padding-left: 15px;
+}
+
+.answer input {
+  display: none;
+}
+
+.selected {
+  background: #F1F1F1;
+  padding: 20px 10px;
+  font-weight: 500;
+}
+
+.correct {
+  background: hsla(120, 80%, 69%, 0.2);
+}
+
+/* .selected.correct { */
+/*   background: linear-gradient(rgba(0,0,255,0.2), rgba(0,255,0,0.2)); */
+/* } */
