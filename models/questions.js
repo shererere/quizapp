@@ -9,7 +9,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
     },
     content: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       required: true,
     },
     correct_answer: {
@@ -27,6 +27,10 @@ module.exports = function(sequelize, DataTypes) {
     wrong_answer3: {
       type: DataTypes.STRING,
       required: true,
+    },
+    has_image: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
     }
   }, {
     underscored: true,

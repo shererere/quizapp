@@ -97,11 +97,16 @@ export default class Question extends Component {
         changeSelection={this.changeSelection}
       />);
 
+    const imageComponent = this.props.hasImage === true
+      ? <div className={styles.image}><img src={`http://localhost:3000/images/${this.props.id}`} /></div>
+      : '';
+
     return (
       <li className={styles.question}>
-        <span className={styles.question__content}>
+        <div className={styles.question__content}>
+          {imageComponent}
           {this.props.question}
-        </span>
+        </div>
         <ul>
           {answersComponent}
         </ul>

@@ -1,43 +1,30 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import jwt from 'jsonwebtoken';
 import { toast } from 'react-toastify';
+import page from '../Page/page.jsx';
 import Header from '../Header/header.jsx';
 import Menu from '../Menu/menu.jsx';
 import Footer from '../Footer/footer.jsx';
 import styles from './style.css';
 
-export default class IndexPage extends Component {
+class IndexPage extends Component {
   constructor(props) {
     super(props);
-    const token = localStorage.getItem('token');
 
     this.state = {
-      userid: jwt.decode(token),
       username: null,
       finishedQuizzes: [],
       availableQuizzes: [],
     };
 
-    this.logoutUser = this.logoutUser.bind(this);
-  }
-
-  async redirectIfUserIsNotLogged() {
-    if (localStorage.getItem('token') === null || typeof localStorage.getItem('token') === 'undefined') {
-      this.props.history.push('/login');
-    }
-  }
-
-  logoutUser() {
-    localStorage.removeItem('token');
-    this.props.history.push('/login');
+    this.logoutUser = this.props.logoutUser.bind(this);
   }
 
   async callAPIEndpoints() {
     try {
-      const username = await axios.get(`http://localhost:3000/api/v1/user/${this.state.userid}`);
-      const finishedQuizzes = await axios.get(`http://localhost:3000/api/v1/user/${this.state.userid}/quizzes/finished`);
-      const availableQuizzes = await axios.get(`http://localhost:3000/api/v1/user/${this.state.userid}/quizzes/available`);
+      const username = await axios.get(`http://localhost:3000/api/v1/user/${this.props.userid}`);
+      const finishedQuizzes = await axios.get(`http://localhost:3000/api/v1/user/${this.props.userid}/quizzes/finished`);
+      const availableQuizzes = await axios.get(`http://localhost:3000/api/v1/user/${this.props.userid}/quizzes/available`);
 
       this.setState({
         username: username.data[0].username,
@@ -54,14 +41,14 @@ export default class IndexPage extends Component {
 
   // TODO: no idea czy `did` czy `will`
   componentDidMount() {
-    this.redirectIfUserIsNotLogged().then(() => {
+    this.props.redirectIfUserIsNotLogged().then(() => {
       this.callAPIEndpoints();
     });
   }
 
   async handleQuizPermission(quizId) {
     const solvingUsers = await axios.get(`http://localhost:3000/api/v1/quiz/${quizId}/users/solving`);
-    const isFinished = await axios.get(`http://localhost:3000/api/v1/user/${this.state.userid}/quiz/${quizId}/finished`);
+    const isFinished = await axios.get(`http://localhost:3000/api/v1/user/${this.props.userid}/quiz/${quizId}/finished`);
 
     if (isFinished.data[0].finished === true && solvingUsers.data.length !== 0) {
       toast('Nie możesz tego zobaczyć w tym momencie!', { type: 'warning' });
@@ -129,3 +116,5 @@ export default class IndexPage extends Component {
     );
   }
 }
+
+export default page(IndexPage);

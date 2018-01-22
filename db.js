@@ -58,7 +58,3 @@ db.questions.belongsToMany(db.users, {
 });
 
 module.exports = db;
-
-
-// hyhyhyhyyhyhy
-// https://lorenstewart.me/2016/09/12/sequelize-table-associations-joins/

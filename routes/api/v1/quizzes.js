@@ -1,13 +1,31 @@
 const routes = require('express').Router();
 const db = require('../../../db');
+const auth = require('../../../auth');
 
 /**
  * Return all quizzes.
  * @method
  */
 routes.get('/', function (req, res) {
-  db.quizzes.findAll().then(function(result) {
+  db.quizzes.findAll({
+    order: [['created_at', 'DESC']],
+  }).then(function(result) {
     res.status(200).json(result);
+  }).catch(function (error) {
+    res.status(400).json({ messsage: 'Error 400', error: error });
+  });
+});
+
+/**
+ * Return newest quiz info.
+ * @method
+ */
+routes.get('/newest', function (req, res) {
+  db.quizzes.findAll({
+    limit: 1,
+    order: [['created_at', 'DESC']],
+  }).then(function (result) {
+    res.status(200).json(result[0]);
   }).catch(function (error) {
     res.status(400).json({ messsage: 'Error 400', error: error });
   });
@@ -36,7 +54,7 @@ routes.get('/:quiz', function (req, res) {
  * @param {string} name - Quiz name.
  * @param {int} size - Amount of questions that are randomly chosen for user.
  */
-routes.post('/', function (req, res) {
+routes.post('/', auth.passport.authenticate('jwt', { session: false }), function (req, res) {
   if (typeof(req.body.name) == 'undefined' ||
       typeof(req.body.size) == 'undefined') {
         res.status(400).json({ error: 'Missing parameters!' });
@@ -139,6 +157,39 @@ routes.get('/:quiz/users/division/:divisions', function (req, res) {
  * Return all questions that belong to the quiz.
  * @method
  * @param {uuid} quiz - Quiz ID.
+ */
+routes.get('/:quiz/questions', function (req, res) {
+  db.questions.findAll({
+    attributes: [
+      'content',
+      'created_at',
+      'updated_at',
+      'id',
+      'quiz_id',
+      'has_image',
+      ['correct_answer', 'answer0'],
+      ['wrong_answer1', 'answer1'],
+      ['wrong_answer2', 'answer2'],
+      ['wrong_answer3', 'answer3'],
+    ],
+    include: [{
+      model: db.quizzes,
+      where: {
+        id: req.params.quiz,
+      },
+      attributes: [],
+    }],
+  }).then(function (result) {
+    res.status(200).json(result);
+  }).catch(function (error) {
+    res.status(400).json({ messsage: 'Error 400', error: error });
+  });
+});
+
+/**
+ * Return certain amount of questions that belong to the quiz in random order.
+ * @method
+ * @param {uuid} quiz - Quiz ID.
  * @param {int} limit - Amount of questions that are randomly chosen for user.
  */
 routes.get('/:quiz/questions/limit/:limit', function (req,res) {
@@ -153,6 +204,7 @@ routes.get('/:quiz/questions/limit/:limit', function (req,res) {
       'updated_at',
       'id',
       'quiz_id',
+      'has_image',
       ['correct_answer', 'answer0'],
       ['wrong_answer1', 'answer1'],
       ['wrong_answer2', 'answer2'],
@@ -178,7 +230,7 @@ routes.get('/:quiz/questions/limit/:limit', function (req,res) {
  * @param {uuid} quizid - Quiz ID.
  * @param {uuid} userid - User ID.
  */
-routes.post('/assign', function(req, res) {
+routes.post('/assign', auth.passport.authenticate('jwt', { session: false }), function(req, res) {
   if (typeof(req.body.quizid) == 'undefined' ||
       typeof(req.body.userid) == 'undefined') {
         res.status(400).json({ error: 'Missing parameters!' });
@@ -202,7 +254,7 @@ routes.post('/assign', function(req, res) {
  * @param {uuid} quizid - Quiz ID.
  * @param {uuid} userid - User ID.
  */
-routes.delete('/unassign', function(req, res) {
+routes.delete('/unassign', auth.passport.authenticate('jwt', { session: false }), function(req, res) {
   if (typeof(req.body.quizid) == 'undefined' ||
       typeof(req.body.userid) == 'undefined') {
         res.status(400).json({ error: 'Missing parameters!' });
@@ -234,7 +286,7 @@ routes.delete('/unassign', function(req, res) {
  * @method
  * @param {uuid} quizid - Quiz ID.
  */
-routes.delete('/', function(req, res) {
+routes.delete('/', auth.passport.authenticate('jwt', { session: false }), function(req, res) {
   if (typeof(req.body.quizid) == 'undefined') {
     res.status(400).json({ error: 'Missing parameters!', error: error });
   } else {

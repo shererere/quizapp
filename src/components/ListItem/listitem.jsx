@@ -2,10 +2,19 @@ import React from 'react';
 import styles from './style.css';
 
 const ListItem = (props) => {
-  const a = Object.keys(props.data).map((item, key) =>
-    <td className={styles.col}key={key}>{props.data[item]}</td>);
+  let classes = `${styles.item} `;
+  if (props.color === 'red') {
+    classes = `${styles.red} ${styles.item}`;
+  } else if (props.color === 'green') {
+    classes = `${styles.green} ${styles.item}`;
+  }
 
-  return <tr className={styles.row}>{a}</tr>;
+  return (<li
+    onClick={props.action}
+    className={classes}
+  >
+    {props.children}
+  </li>);
 };
 
 export default ListItem;

@@ -1,5 +1,6 @@
 const routes = require('express').Router();
 const bCrypt = require('bcrypt-nodejs');
+const auth = require('../../../auth');
 const db = require('../../../db');
 
 /**
@@ -129,7 +130,7 @@ routes.get('/:user/quiz/:quiz/answers/correct', function (req, res) {
 });
 
 /**
- * Return number of user's correct answers.
+ * Return questions that user has answered in given quiz.
  * @method
  * @param {uuid} user_id - User ID.
  * @param {uuid} quiz_id - Quiz ID.
@@ -142,6 +143,7 @@ routes.get('/:user/quiz/:quiz/questions', function (req, res) {
       'updated_at',
       'id',
       'quiz_id',
+      'has_image',
       ['correct_answer', 'answer0'],
       ['wrong_answer1', 'answer1'],
       ['wrong_answer2', 'answer2'],
@@ -309,7 +311,7 @@ routes.get('/:user/quiz/:quiz/finished', function (req, res) {
  * @param {uuid} userid - User ID.
  * @param {uuid} quizid - Quiz ID.
  */
-routes.post('/quiz/finish', function(req, res) {
+routes.post('/quiz/finish', auth.passport.authenticate('jwt', { session: false }), function(req, res) {
   if (typeof (req.body.userid) == 'undefined' ||
     typeof (req.body.quizid) == 'undefined') {
     res.status(400).json({ error: 'Missing parameters!' });
@@ -344,7 +346,7 @@ routes.post('/quiz/finish', function(req, res) {
  * @param {uuid} quizid - Quiz ID.
  * @param {int} answer - {0 (correct), 1, 2, 3}.
  */
-routes.post('/quiz/answer', function(req, res) {
+routes.post('/quiz/answer', auth.passport.authenticate('jwt', { session: false }), function(req, res) {
   if (typeof(req.body.questionid) == 'undefined' ||
       typeof(req.body.userid) == 'undefined' ||
       typeof(req.body.quizid) == 'undefined' ||
@@ -373,7 +375,7 @@ routes.post('/quiz/answer', function(req, res) {
  * @param {uuid} quizid - Quiz ID.
  */
 
-routes.delete('/quiz/answers', function(req, res) {
+routes.delete('/quiz/answers', auth.passport.authenticate('jwt', { session: false }), function(req, res) {
   if (typeof(req.body.userid) === 'undefined' ||
       typeof(req.body.quizid) === 'undefined' ) {
         res.status(400).json({ error: 'Missing parameters!' });
@@ -408,7 +410,7 @@ routes.delete('/quiz/answers', function(req, res) {
  * @method
  * @param {uuid} userid - User ID.
  */
-routes.delete('/', function(req, res) {
+routes.delete('/', auth.passport.authenticate('jwt', { session: false }), function(req, res) {
   if (typeof(req.body.userid) == 'undefined') {
     res.status(400).json({ error: 'Missing parameters!' });
   } else {
@@ -488,7 +490,7 @@ module.exports = routes;
  * @param {string} division - Division name
  * @param {enum} role - 'user' or 'admin'
  */
-routes.post('/register', function (req, res) {
+routes.post('/register', auth.passport.authenticate('jwt', { session: false }), function (req, res) {
   var generateHash = function (password) {
     return bCrypt.hashSync(password, bCrypt.genSaltSync(8), null);
   };

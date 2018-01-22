@@ -60,3 +60,6 @@ typings/
 # misc
 package-lock.json
 /dist
+/uploads
+TODO.md
+

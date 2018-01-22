@@ -3,9 +3,11 @@ import styles from './style.css';
 
 const Button = (props) => {
   const classes = props.center === 'true' ? `${styles.button} ${styles.button_center}` : `${styles.button}`;
-  const button = props.action
-    ? <button className={classes} onClick={props.action}>{props.text}</button>
-    : <button className={classes}>{props.text}</button>;
+  let button = <button className={classes}>{props.text}</button>;
+
+  if (props.action) {
+    button = <button className={classes} onClick={props.action}>{props.text}</button>;
+  }
 
   return button;
 };

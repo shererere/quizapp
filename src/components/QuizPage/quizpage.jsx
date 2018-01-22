@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import jwt from 'jsonwebtoken';
+// import jwt from 'jsonwebtoken';
 import { toast } from 'react-toastify';
+import page from '../Page/page.jsx';
 import Header from '../Header/header.jsx';
 import Button from '../Button/button.jsx';
 import Menu from '../Menu/menu.jsx';
@@ -9,59 +10,41 @@ import Footer from '../Footer/footer.jsx';
 import Question from '../Question/question.jsx';
 import styles from './style.css';
 
-export default class QuizPage extends Component {
+class QuizPage extends Component {
   constructor(props) {
     super(props);
-    const token = localStorage.getItem('token');
 
     this.state = {
       quizid: this.props.match.params.id,
-      userid: jwt.decode(token),
       title: null,
       questions: [],
       isFinished: null,
       selectedAnswers: [],
     };
 
-    this.logoutUser = this.logoutUser.bind(this);
+    this.axiosConfig = {
+      baseURL: 'http://localhost:3000/api/v1',
+      headers: {
+        Authorization: `Bearer ${this.props.token}`,
+      },
+    };
+
+    this.logoutUser = this.props.logoutUser.bind(this);
     this.selectAnswer = this.selectAnswer.bind(this);
     this.solveQuiz = this.solveQuiz.bind(this);
-  }
-
-  async redirectIfUserIsNotLogged() {
-    if (localStorage.getItem('token') === null || typeof localStorage.getItem('token') === 'undefined') {
-      this.props.history.push('/login');
-    }
-  }
-
-  // TODO: rename this function
-  async redirectUser() {
-    const solvingUsers = await axios.get(`http://localhost:3000/api/v1/quiz/${this.state.quizid}/users/solving`);
-
-    if (this.state.isFinished === true && solvingUsers.data.length !== 0) {
-      toast('Nie możesz tego zobaczyć w tym momencie!', {
-        type: 'warning',
-      });
-      this.props.history.push('/');
-    }
-  }
-
-  logoutUser() {
-    localStorage.removeItem('token');
-    this.props.history.push('/login');
   }
 
   async callAPIEndpoints() {
     try {
       const info = await axios.get(`http://localhost:3000/api/v1/quiz/${this.state.quizid}`);
-      const isFinished = await axios.get(`http://localhost:3000/api/v1/user/${this.state.userid}/quiz/${this.state.quizid}/finished`);
+      const isFinished = await axios.get(`http://localhost:3000/api/v1/user/${this.props.userid}/quiz/${this.state.quizid}/finished`);
       let questions = null;
 
       if (isFinished.data[0].finished === true) {
         const selectedAnswers = [];
-        const usersAnswers = await axios.get(`http://localhost:3000/api/v1/user/${this.state.userid}/quiz/${this.state.quizid}/answers`);
-        const correctAnswers = await axios.get(`http://localhost:3000/api/v1/user/${this.state.userid}/quiz/${this.state.quizid}/answers/correct`);
-        questions = await axios.get(`http://localhost:3000/api/v1/user/${this.state.userid}/quiz/${this.state.quizid}/questions`);
+        const usersAnswers = await axios.get(`http://localhost:3000/api/v1/user/${this.props.userid}/quiz/${this.state.quizid}/answers`);
+        const correctAnswers = await axios.get(`http://localhost:3000/api/v1/user/${this.props.userid}/quiz/${this.state.quizid}/answers/correct`);
+        questions = await axios.get(`http://localhost:3000/api/v1/user/${this.props.userid}/quiz/${this.state.quizid}/questions`);
 
         usersAnswers.data.forEach(async (a) => {
           selectedAnswers.push({ questionid: a.question_id, answer: a.answer });
@@ -94,12 +77,9 @@ export default class QuizPage extends Component {
     }
   }
 
-  componentWillMount() {
-    // TODO: to też musi być zrobione jakoś inaczej
-    this.redirectIfUserIsNotLogged().then(() => {
-      this.callAPIEndpoints().then(() => {
-        this.redirectUser();
-      });
+  componentDidMount() {
+    this.props.redirectIfUserIsNotLogged().then(() => {
+      this.callAPIEndpoints();
     });
   }
 
@@ -119,18 +99,18 @@ export default class QuizPage extends Component {
       const stateCopy = Object.assign({}, this.state);
 
       stateCopy.selectedAnswers.map(async (answer, i) => {
-        await axios.post('http://localhost:3000/api/v1/user/quiz/answer/', {
+        await axios.post('/user/quiz/answer/', {
           questionid: stateCopy.selectedAnswers[i].questionid,
-          userid: stateCopy.userid,
+          userid: this.props.userid,
           quizid: stateCopy.quizid,
           answer: stateCopy.selectedAnswers[i].answer,
-        });
+        }, this.axiosConfig);
       });
 
-      await axios.post('http://localhost:3000/api/v1/user/quiz/finish', {
-        userid: this.state.userid,
+      await axios.post('/user/quiz/finish', {
+        userid: this.props.userid,
         quizid: this.state.quizid,
-      });
+      }, this.axiosConfig);
     } catch (error) {
       toast('Wystąpił błąd!', {
         type: 'error',
@@ -173,6 +153,7 @@ export default class QuizPage extends Component {
           id={q.id}
           quiz={this.state.quizid}
           isFinished={this.state.isFinished}
+          hasImage={q.has_image}
           question={q.content}
           answer1={q.answer0}
           answer2={q.answer1}
@@ -211,3 +192,5 @@ export default class QuizPage extends Component {
     );
   }
 }
+
+export default page(QuizPage);
