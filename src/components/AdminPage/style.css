@@ -1,21 +1,20 @@
 .nav {
-	position: fixed;
-	left: 0;
-	top: 0;
-	width: 200px;
-	height: 100vh;
-	background: #eaeaea;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 224px;
+  height: 100vh;
+  background: #eaeaea;
 }
 
 .logo {
-  font-size: 2.85em;
-  text-align: center;
+  margin: 12px;
 }
 
 .content {
-  width: calc(100% - 224px);
+  width: calc(100% - 248px);
   height: calc(100% - 12px);
   position: absolute;
-  left: 212px;
+  left: 236px;
   top: 12px;
 }

@@ -1,5 +1,9 @@
 import React, { Component } from 'react';
 import jwt from 'jsonwebtoken';
+import Header from '../Header/header.jsx';
+import Menu from '../Menu/menu.jsx';
+import Footer from '../Footer/footer.jsx';
+import styles from './style.css';
 
 export default function page(WrappedComponent) {
   return class extends Component {
@@ -10,11 +14,26 @@ export default function page(WrappedComponent) {
       this.state = {
         userid: jwt.decode(this.token),
       };
+
+      this.menuItems = [
+        {
+          label: 'Zmień hasło',
+          action: () => {
+            this.props.history.push('/password');
+          },
+        },
+        {
+          label: 'Wyloguj',
+          action: this.logoutUser.bind(this),
+        },
+      ];
+
+      // this.logoutUser = this.logoutUser.bind(this);
     }
 
-    async redirectIfUserIsNotLogged() {
+    async redirectIfUserIsNotLogged(history) {
       if (localStorage.getItem('token') === null || typeof localStorage.getItem('token') === 'undefined') {
-        this.props.history.push('/login');
+        history.push('/login');
       }
     }
 
@@ -24,17 +43,21 @@ export default function page(WrappedComponent) {
     }
 
     render() {
+      const menuComponent = <Menu items={this.menuItems} fix="false" align="right" />;
+
       return (
-        <WrappedComponent
-          token={this.token}
-          userid={this.state.userid}
-          logoutUser={this.logoutUser}
-          toggleLoading={this.toggleLoading}
-          redirectIfUserIsNotLogged={this.redirectIfUserIsNotLogged}
-          {...this.props}
-        />
+        <div className={styles.wrapper}>
+          <Header menu={menuComponent} link="true" />
+          <WrappedComponent
+            token={this.token}
+            userid={this.state.userid}
+            logoutUser={this.logoutUser}
+            redirectIfUserIsNotLogged={this.redirectIfUserIsNotLogged}
+            {...this.props}
+            />
+          <Footer />
+        </div>
       );
     }
   };
 }
-

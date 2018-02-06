@@ -8,6 +8,12 @@
   border-radius: 5px;
 }
 
+.input::placeholder {
+  font-size: 13px;
+  color: #595959;
+  line-height: 1.2;
+}
+
 .border {
   border: 1px solid #545454;
 }

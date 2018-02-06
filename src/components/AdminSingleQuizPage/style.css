@@ -1,7 +1,7 @@
 .col_2 {
-  width: calc(50% - 12px);
+  width: calc(50% - 18px);
   float: left;
-  margin-right: 12px;
+  margin-right: 18px;
 }
 
 .col_2:last-of-type {
@@ -12,4 +12,84 @@
 .select {
   border: 2px solid black;
   border-radius: 7px;
+  outline: 0;
+}
+
+.divisionForm {
+  display: none;
+  margin: 32px 0 0 0;
+}
+
+.quizName {
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.6em;
+  margin: 8px 0 16px 0;
+}
+
+.empty {
+  text-align: center;
+  margin: 48px 0;
+  color: #2e2e2e;
+  font-size: 14.5px;
+  line-height: 1.35;
+}
+
+.question,
+.user {
+  line-height: 1.3;
+  margin: 0 0 8px 0;
+  font-weight: 600;
+}
+
+.answer,
+.userResult {
+  line-height: 1.2;
+}
+
+.division {
+  display: block;
+  font-size: 12px;
+  color: #424242;
+  transform: translateY(-6px);
+}
+
+.questionImage {
+  width: 100%;
+  text-align: center;
+}
+
+.dropzone {
+  font-family: "Roboto", sans-serif;
+  font-size: 14px;
+  outline: 0;
+  margin: 6px;
+  padding: 7px 12px 6px 12px;
+  background-color: transparent;
+  color: #2C2C2C;
+  border: 2px solid #2C2C2C;
+  display: inline-block;
+  border-radius: 7px;
+  user-select: none;
+  text-transform: uppercase;
+  font-weight: 700;
+  transition: all .24s ease;
+  -webkit-appearance: none;
+  -moz-appearance:    none;
+  cursor: pointer;
+}
+
+.dropzone:hover {
+  background-color: #2C2C2C;
+  color: white;
+  border: 2px solid #2C2C2C;
+}
+
+.dropzone:active {
+  background-color: #1f1f1f;
+  border: 2px solid #1f1f1f;
+}
+
+.buttonsContainer {
+  margin: 18px 0 0 -6px;
 }

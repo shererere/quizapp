@@ -2,9 +2,6 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import page from '../Page/page.jsx';
-import Header from '../Header/header.jsx';
-import Menu from '../Menu/menu.jsx';
-import Footer from '../Footer/footer.jsx';
 import styles from './style.css';
 
 class IndexPage extends Component {
@@ -16,8 +13,6 @@ class IndexPage extends Component {
       finishedQuizzes: [],
       availableQuizzes: [],
     };
-
-    this.logoutUser = this.props.logoutUser.bind(this);
   }
 
   async callAPIEndpoints() {
@@ -41,8 +36,10 @@ class IndexPage extends Component {
 
   // TODO: no idea czy `did` czy `will`
   componentDidMount() {
-    this.props.redirectIfUserIsNotLogged().then(() => {
-      this.callAPIEndpoints();
+    this.props.redirectIfUserIsNotLogged(this.props.history).then(() => {
+      if (this.props.userid) {
+        this.callAPIEndpoints();
+      }
     });
   }
 
@@ -85,33 +82,23 @@ class IndexPage extends Component {
         </li>);
     }
 
-    const menuItems = [
-      {
-        label: 'Wyloguj',
-        action: this.logoutUser,
-      },
-    ];
-    const menuComponent = <Menu items={menuItems} fix="false" align="right" />;
-
     return (
       <main className={styles.main}>
-        <Header menu={menuComponent} />
           <div className={styles.wrapper}>
-            <h2 className={styles.logged}>
-              Zalogowany jako {this.state.username}
-            </h2>
+          <h2 className={styles.logged}>
+            Zalogowany jako {this.state.username}
+          </h2>
 
-            <h3 className={styles.subtitle}>Twoje nierozwiązane testy</h3>
-            <ul className={styles.quizzesList}>
-              {availableQuizzesComponent}
-            </ul>
+          <h3 className={styles.subtitle}>Twoje nierozwiązane testy</h3>
+          <ul className={styles.quizzesList}>
+            {availableQuizzesComponent}
+          </ul>
 
-            <h3 className={styles.subtitle}>Twoje rozwiązane testy</h3>
-            <ul className={styles.quizzesList}>
-              {finishedQuizzesComponent}
-            </ul>
-          </div>
-        <Footer />
+          <h3 className={styles.subtitle}>Twoje rozwiązane testy</h3>
+          <ul className={styles.quizzesList}>
+            {finishedQuizzesComponent}
+          </ul>
+        </div>
       </main>
     );
   }

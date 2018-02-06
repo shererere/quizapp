@@ -32,9 +32,14 @@
   cursor: pointer;
 }
 
-.button_center {
+.buttonCenter {
   display: block;
   margin: 32px auto 0 auto;
+}
+
+.buttonSmall {
+  margin: 6px;
+  padding: 7px 12px 6px 12px;
 }
 
 .button:hover {
@@ -46,4 +51,13 @@
 .button:active {
   background-color: #1f1f1f;
   border: 2px solid #1f1f1f;
+}
+
+.blank {
+  outline: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  float: right;
+  transform: translateX(6px);
 }

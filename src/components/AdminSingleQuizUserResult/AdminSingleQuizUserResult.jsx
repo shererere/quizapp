@@ -47,16 +47,16 @@ class AdminSingleQuizUserResult extends Component {
 
       return (<ListItem key={question.id} color={color}>
         <ul>
-          <li> {question.content} </li>
-          <li> Poprawna odpowiedź: {question.answer0}</li>
-          <li> Odpowiedź użytkownika: {userAnswer}</li>
+          <li className={styles.question}>{question.content}</li>
+          <li className={styles.answer}>Poprawna odpowiedź: {question.answer0}</li>
+          <li className={styles.answer}>Odpowiedź użytkownika: {userAnswer}</li>
         </ul>
       </ListItem>);
     });
 
     return (
       <div>
-        <h2>
+        <h2 className={styles.title}>
           Użytkownik
           <span className={styles.a}>{this.state.user.username}</span>
           zdobył
@@ -64,7 +64,7 @@ class AdminSingleQuizUserResult extends Component {
           procent poprawnych odpowiedzi w quizie o nazwie
           <span className={styles.a}>{this.state.quiz.name}</span>
         </h2>
-        <List>
+        <List header="Odpowiedzi">
           {questionsListComponent}
         </List>
       </div>
