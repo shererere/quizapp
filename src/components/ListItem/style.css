@@ -6,6 +6,7 @@
   border-left: 5px solid;
   border-radius: 2px;
   cursor: pointer;
+  position: relative;
 }
 
 .red {

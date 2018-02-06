@@ -5,19 +5,16 @@ const multer = require('multer');
 const routes = require('express').Router();
 const db = require('../../../db');
 const auth = require('../../../auth');
+const isAdmin = require('../../../middleware');
 
 const images_storage = multer.diskStorage({
   destination: function(req, file, cb) {
     cb(null, 'uploads/images/');
   },
-  // filename: function(req, file, cb) {
-  //   cb(null, req.body.questionid);
-  // },
 });
 
 const upload = multer({ dest: 'uploads/temp/' });
 const upload_images = multer({ storage: images_storage });
-
 
 /**
  * Return all questions.
@@ -26,6 +23,21 @@ const upload_images = multer({ storage: images_storage });
 routes.get('/', function (req, res) {
   db.questions.findAll().then(function(result) {
     res.status(200).json(result);
+  }).catch(function (error) {
+    res.status(400).json({ messsage: 'Error 400', error: error });
+  });
+});
+
+/**
+ * Return newest question info.
+ * @method
+ */
+routes.get('/newest', function (req, res) {
+  db.questions.findAll({
+    limit: 1,
+    order: [['created_at', 'DESC']],
+  }).then(function (result) {
+    res.status(200).json(result[0]);
   }).catch(function (error) {
     res.status(400).json({ messsage: 'Error 400', error: error });
   });
@@ -58,7 +70,7 @@ routes.get('/:question', function (req, res) {
  * @param {string} wrong_answer3 - Wrong answer content.
  * @param {uuid} quiz_id - Quiz ID.
  */
-routes.post('/', auth.passport.authenticate('jwt', { session: false }), function (req, res) {
+routes.post('/', auth.passport.authenticate('jwt', { session: false }), isAdmin, function (req, res) {
   if (typeof(req.body.content) == 'undefined' ||
       typeof(req.body.correct_answer) == 'undefined' ||
       typeof(req.body.wrong_answer1) == 'undefined' ||
@@ -89,7 +101,7 @@ routes.post('/', auth.passport.authenticate('jwt', { session: false }), function
  * @method
  * @param {uuid} id - Question ID.
  */
-routes.delete('/', auth.passport.authenticate('jwt', { session: false }), function(req, res) {
+routes.delete('/', auth.passport.authenticate('jwt', { session: false }), isAdmin, function(req, res) {
   if (typeof(req.body.id) == 'undefined') {
     res.status(400).json({ error: 'Missing parameters!' });
   } else {
@@ -121,7 +133,7 @@ routes.delete('/', auth.passport.authenticate('jwt', { session: false }), functi
  * @method
  * @param {uuid} id - Question ID.
  */
-routes.post('/upload', upload.single('file'), function (req, res, next) {
+routes.post('/upload', auth.passport.authenticate('jwt', { session: false }), upload.single('file'), isAdmin, function (req, res, next) {
   var stream = fs.createReadStream(req.file.path);
   var csvStream = csv({
     delimiter: ',',
@@ -149,8 +161,7 @@ routes.post('/upload', upload.single('file'), function (req, res, next) {
  * @method
  * @param {uuid} questionid - Question ID.
  */
-routes.post('/upload/image', upload_images.single('file'), function (req, res, next) {
-
+routes.post('/upload/image', auth.passport.authenticate('jwt', { session: false }), upload_images.single('file'), isAdmin, function (req, res, next) {
   if (!fs.existsSync(path.resolve(__dirname, '../../..', 'uploads', 'images', req.body.questionid))) {
     // change 'has_image' field in db
     if (typeof (req.body.questionid) == 'undefined') {
@@ -163,7 +174,7 @@ routes.post('/upload/image', upload_images.single('file'), function (req, res, n
           },
         }).then(function (record) {
           record.update({
-            has_image: !record.has_image,
+            has_image: 1,
           },
           {
             fields: ['has_image'],
@@ -184,6 +195,36 @@ routes.post('/upload/image', upload_images.single('file'), function (req, res, n
     }
   } else {
     res.status(400).json({ messsage: 'File associated with this question exist' });
+  }
+});
+
+/**
+ * It removes question image.
+ * @method
+ * @param {uuid} questionid - Question ID.
+ */
+routes.delete('/upload/image', auth.passport.authenticate('jwt', { session: false }), isAdmin, function(req, res) {
+  if (typeof (req.body.questionid) == 'undefined') {
+    res.status(400).json({ error: 'Missing parameters!' });
+  } else {
+    db.questions.findOne({
+      where: {
+        id: req.body.questionid,
+      },
+    }).then(function (record) {
+      record.update({
+        has_image: 0,
+      },
+      {
+        fields: ['has_image'],
+      }).then(function() {
+        fs.unlink(path.resolve(__dirname, '../../..', 'uploads', 'images', req.body.questionid), function() {
+          res.status(201).json({ message: 'Image deleted sucessfully' });
+        });
+      }).catch(function (error) {
+        res.status(400).json({ messsage: 'Error 400', error: error });
+      });
+    });
   }
 });
 

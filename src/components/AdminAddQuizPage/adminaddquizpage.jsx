@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import Dropzone from 'react-dropzone';
 import adminPage from '../AdminPage/adminpage.jsx';
 import Input from '../Input/input.jsx';
 import Button from '../Button/button.jsx';
+import styles from './style.css';
 
 class AdminAddQuizPage extends Component {
   constructor(props) {
@@ -35,6 +37,11 @@ class AdminAddQuizPage extends Component {
 
   handleSize(e) {
     this.setState({ size: e.target.value });
+  }
+
+  handleQuestionFile(files) {
+    this.state.file.delete('file');
+    this.state.file.append('file', files[0]);
   }
 
   async addQuiz(e) {
@@ -70,20 +77,22 @@ class AdminAddQuizPage extends Component {
     }
   }
 
-  handleQuestionFile(event) {
-    this.state.file.delete('file');
-    this.state.file.append('file', event.target.files[0]);
-  }
-
   render() {
     return (
       <div>
-        <h2>Dodaj test</h2>
+        <h2 className={styles.title}>Dodaj test</h2>
         <form>
           <Input type="text" placeholder="Nazwa" onChange={this.handleName} border="true" />
           <Input type="number" placeholder="Ilość losowanych pytań" onChange={this.handleSize} border="true" min="1" />
-          <Input type="file" id="file" onChange={this.handleQuestionFile} border="true" />
-          <Button text="Dodaj" action={this.addQuiz} />
+          {/* <Input type="file" id="file" onChange={this.handleQuestionFile} border="true" /> */}
+          <Dropzone
+            accept="text/csv"
+            className={styles.dropzone}
+            onDrop={this.handleQuestionFile}
+          >
+            Plik *.csv z pytaniami (kliknij, aby wybrać lub przeciągnij plik)
+          </Dropzone>
+          <Button text="Dodaj" action={this.addQuiz} center="true" />
         </form>
       </div>
     );

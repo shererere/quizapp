@@ -1,0 +1,26 @@
+.title {
+  text-align: center;
+  font-weight: 500;
+  font-size: 1.15em;
+  margin: 16px 0;
+}
+
+.dropzone {
+  width: 230px;
+  margin: 0 auto;
+  padding: 10px 16px;
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border: 1px solid #545454;
+  font-size: 13px;
+  color: #595959;
+  line-height: 1.2;
+}
+
+.select {
+  border-radius: 7px;
+  outline: 0;
+  margin: 24px auto 0 auto;
+  width: 262px;
+  box-sizing: content-box;
+}

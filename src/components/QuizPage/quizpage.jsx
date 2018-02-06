@@ -3,10 +3,7 @@ import axios from 'axios';
 // import jwt from 'jsonwebtoken';
 import { toast } from 'react-toastify';
 import page from '../Page/page.jsx';
-import Header from '../Header/header.jsx';
 import Button from '../Button/button.jsx';
-import Menu from '../Menu/menu.jsx';
-import Footer from '../Footer/footer.jsx';
 import Question from '../Question/question.jsx';
 import styles from './style.css';
 
@@ -78,7 +75,7 @@ class QuizPage extends Component {
   }
 
   componentDidMount() {
-    this.props.redirectIfUserIsNotLogged().then(() => {
+    this.props.redirectIfUserIsNotLogged(this.props.history).then(() => {
       this.callAPIEndpoints();
     });
   }
@@ -132,7 +129,9 @@ class QuizPage extends Component {
       resultComponent = <h3 className={styles.result}>Rozwiązałeś ten test na {percent}%</h3>;
     } else {
       titleComponent = <h2 className={styles.quizTitle}>Rozwiązujesz test: {this.state.title}</h2>;
-      buttonComponent = <Button text="Sprawdź odpowiedzi" center="true" action={() => {
+      buttonComponent = <Button text="Sprawdź odpowiedzi" center="true" action={(e) => {
+        e.target.style.display = 'none';
+
         this.solveQuiz().then(() => {
           toast('Odpowiedzi zostały wysłane. Zostaniesz przeniesiony na stronę główną.', {
             type: 'success',
@@ -168,17 +167,8 @@ class QuizPage extends Component {
       questionsComponent = <h3>Brak przypisanych pytań do testu</h3>;
     }
 
-    const menuItems = [
-      {
-        label: 'Wyloguj',
-        action: this.logoutUser,
-      },
-    ];
-    const menuComponent = <Menu items={menuItems} fix="false" align="right" />;
-
     return (
-      <main className={styles.main}>
-        <Header menu={menuComponent} link="true" />
+      <main>
         <div className={styles.wrapper}>
           {titleComponent}
           {resultComponent}
@@ -187,7 +177,6 @@ class QuizPage extends Component {
           </ul>
           {buttonComponent}
         </div>
-        <Footer />
       </main>
     );
   }

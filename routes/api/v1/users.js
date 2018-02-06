@@ -2,6 +2,12 @@ const routes = require('express').Router();
 const bCrypt = require('bcrypt-nodejs');
 const auth = require('../../../auth');
 const db = require('../../../db');
+const isAdmin = require('../../../middleware');
+
+
+var generateHash = function (password) {
+  return bCrypt.hashSync(password, bCrypt.genSaltSync(8), null);
+};
 
 /**
  * Return all divisions.
@@ -269,7 +275,7 @@ routes.get('/:user/quizzes/available', function (req, res) {
  * @param {uuid} user - User ID.
  */
 routes.get('/:user/quizzes', function (req, res) {
-  db.quizzes.findAll({
+  db.quizzes.findAndCountAll({
     include: [{
       model: db.users,
       attributes: [],
@@ -278,7 +284,38 @@ routes.get('/:user/quizzes', function (req, res) {
       },
     }],
   }).then(function (result) {
-    res.status(200).json(result);
+    let counter = 0;
+    let finalResults = [];
+    result.rows.forEach(function (item, key) {
+      db.users_quizzes.findOne({
+        attributes: ['finished'],
+        where: {
+          user_id: req.params.user,
+          quiz_id: item.id,
+        },
+      }).then(function (result1) {
+        db.users_answers.findAndCountAll({
+          where: {
+            answer: 0,
+            user_id: req.params.user,
+            quiz_id: item.id,
+          },
+        }).then(function (result2) {
+          finalResults.push({
+            id: item.id,
+            name: item.name,
+            size: item.size,
+            created_at: item.created_at,
+            finished: result1.finished,
+            correct_answers: result2.count,
+          });
+          counter++;
+          if (counter == result.count) {
+            res.status(200).json(finalResults);
+          }
+        });
+      });
+    });
   }).catch(function (error) {
     res.status(400).json({ messsage: 'Error 400', error: error });
   });
@@ -375,7 +412,7 @@ routes.post('/quiz/answer', auth.passport.authenticate('jwt', { session: false }
  * @param {uuid} quizid - Quiz ID.
  */
 
-routes.delete('/quiz/answers', auth.passport.authenticate('jwt', { session: false }), function(req, res) {
+routes.delete('/quiz/answers', auth.passport.authenticate('jwt', { session: false }), isAdmin, function(req, res) {
   if (typeof(req.body.userid) === 'undefined' ||
       typeof(req.body.quizid) === 'undefined' ) {
         res.status(400).json({ error: 'Missing parameters!' });
@@ -410,7 +447,7 @@ routes.delete('/quiz/answers', auth.passport.authenticate('jwt', { session: fals
  * @method
  * @param {uuid} userid - User ID.
  */
-routes.delete('/', auth.passport.authenticate('jwt', { session: false }), function(req, res) {
+routes.delete('/', auth.passport.authenticate('jwt', { session: false }), isAdmin, function(req, res) {
   if (typeof(req.body.userid) == 'undefined') {
     res.status(400).json({ error: 'Missing parameters!' });
   } else {
@@ -437,51 +474,6 @@ routes.delete('/', auth.passport.authenticate('jwt', { session: false }), functi
   }
 });
 
-// add new user
-// routes.post('/user', function (req, res) {
-//   if (typeof(req.body.username) == 'undefined' ||
-//       typeof(req.body.password) == 'undefined' ||
-//       typeof(req.body.division) == 'undefined' ) {
-//         res.status(400).json({ error: 'Missing parameters!' });
-//   } else {
-//     db.sequelize.sync().then(function() {
-//       db.users.create({
-//         username: req.body.username,
-//         password: req.body.password, //plaintext xdxdxdxd
-//         division: req.body.division,
-//         role: 'user',
-//       });
-//     }).then(function() {
-//       res.status(201).json({ message: 'User created successfully' });
-//     });
-//   }
-
-// });
-
-module.exports = routes;
-
-// JUST IN CASE IN EMERGENCY
-// // TODO: move to quiz ???
-// // return all quizzes, that user finished
-// routes.get('/:user/quizzes/finished', function (req, res) {
-//   const xd = db.sequelize.query("SELECT q.*, uq.finished FROM quizzes q, users_quizzes uq WHERE uq.quiz_id = q.id AND uq.finished = 1 AND uq.user_id = '" + req.params.user + "'")
-//     .spread(function (results, metadata) {
-//       console.log(results);
-//       res.status(200).json(results);
-//     });
-// });
-
-// // TODO: move to quiz ???
-// // return all quizzes, that are available for user
-// routes.get('/:user/quizzes/available', function (req, res) {
-//   const xd = db.sequelize.query("SELECT q.*, uq.finished FROM quizzes q, users_quizzes uq WHERE uq.quiz_id = q.id AND uq.finished = 0 AND uq.user_id = '" + req.params.user + "'")
-//     .spread(function (results, metadata) {
-//       console.log(results);
-//       res.status(200).json(results);
-//     });
-// });
-
-
 /**
  * Register user.
  * @method
@@ -490,11 +482,8 @@ module.exports = routes;
  * @param {string} division - Division name
  * @param {enum} role - 'user' or 'admin'
  */
-routes.post('/register', auth.passport.authenticate('jwt', { session: false }), function (req, res) {
-  var generateHash = function (password) {
-    return bCrypt.hashSync(password, bCrypt.genSaltSync(8), null);
-  };
 
+routes.post('/register', auth.passport.authenticate('jwt', { session: false }), isAdmin, function (req, res) {
   if (typeof (req.body.username) == 'undefined' ||
     typeof (req.body.password) == 'undefined' ||
     typeof (req.body.division) == 'undefined' ||
@@ -507,7 +496,7 @@ routes.post('/register', auth.passport.authenticate('jwt', { session: false }), 
       }
     }).then(function (user) {
       if (user) {
-        res.status(400).json({ messsage: 'User exists' });
+        res.status(400).json({ message: 'User exists' });
       } else {
         var userPassword = generateHash(req.body.password);
         var data = {
@@ -530,3 +519,35 @@ routes.post('/register', auth.passport.authenticate('jwt', { session: false }), 
     });
   }
 });
+
+/**
+ * Change user's password.
+ * @method
+ * @param {uuid} userid - userid.
+ * @param {string} password - Password.
+ */
+routes.post('/password/change', auth.passport.authenticate('jwt', { session: false }), function (req, res) {
+  if (typeof (req.body.userid) == 'undefined' ||
+    typeof (req.body.password) == 'undefined') {
+      res.status(400).json({ error: 'Missing parameters!' });
+  } else {
+    db.users.findOne({
+      where: {
+        id: req.body.userid,
+      },
+    }).then(function (record) {
+      record.update({
+        password: generateHash(req.body.password),
+      },
+      {
+        fields: ['password'],
+      });
+    }).then(function () {
+      res.status(200).json({ message: 'Password changed successfully' });
+    }).catch(function (error) {
+      res.status(400).json({ messsage: 'Error 400', error: error });
+    });
+  }
+});
+
+module.exports = routes;

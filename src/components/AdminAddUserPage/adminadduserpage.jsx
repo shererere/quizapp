@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import Input from '../Input/input.jsx';
 import Button from '../Button/button.jsx';
 import adminPage from '../AdminPage/adminpage.jsx';
+import styles from './style.css';
 
 class AdminAddUserPage extends Component {
   constructor(props) {
@@ -41,7 +42,7 @@ class AdminAddUserPage extends Component {
     this.setState({ division: event.target.value });
   }
 
-  registerUser(e) {
+  async registerUser(e) {
     e.preventDefault();
 
     if (this.state.register_username === '' && this.state.register_password === '' && this.state.register_division === '') {
@@ -51,28 +52,31 @@ class AdminAddUserPage extends Component {
     }
 
     if (this.state.register_username !== '' && this.state.register_password !== '' && this.state.register_division !== '') {
-      axios.post('/user/register', {
-        username: this.state.username,
-        password: this.state.password,
-        division: this.state.division,
-        role: 'user',
-      }, this.axiosConfig).then(() => {
-        // TODO: refresh site and clear inputs
-        toast('Użytkownik został zarejestrowany!', {
-          type: 'success',
-        });
-      }).catch((error) => {
-        toast(`Wystąpił błąd!: ${error}`, {
+      try {
+        const newUser = await axios.post('/user/register', {
+          username: this.state.username,
+          password: this.state.password,
+          division: this.state.division,
+          role: 'user',
+        }, this.axiosConfig);
+
+        if (newUser.status === 201) {
+          toast('Użytkownik został zarejestrowany!', {
+            type: 'success',
+          });
+        }
+      } catch (error) {
+        toast('Wystąpił błąd!', {
           type: 'error',
         });
-      });
+      }
     }
   }
 
   render() {
     return (
       <div>
-        <h2>Dodaj nowego użytkownika</h2>
+        <h2 className={styles.title}>Dodaj nowego użytkownika</h2>
         <form>
           <Input
             border="true"
@@ -92,7 +96,7 @@ class AdminAddUserPage extends Component {
             placeholder="Klasa"
             onChange={this.handleRegisterDivision}
           />
-          <Button text="Zarejestruj!" action={this.registerUser} />
+          <Button text="Zarejestruj!" action={this.registerUser} center="true" />
         </form>
       </div>
     );

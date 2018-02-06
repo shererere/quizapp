@@ -2,3 +2,20 @@
   margin: 0 4px;
   font-weight: 600;
 }
+
+.title {
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.6em;
+  margin: 8px 0 16px 0;
+}
+
+.question {
+  line-height: 1.3;
+  margin: 0 0 8px 0;
+  font-weight: 600;
+}
+
+.answer {
+  line-height: 1.2;
+}

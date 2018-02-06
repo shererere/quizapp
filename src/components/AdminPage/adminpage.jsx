@@ -27,6 +27,10 @@ function adminPage(WrappedComponent) {
               label: 'Dodaj test',
               action: () => { this.props.history.push('/admin/quiz/add'); },
             },
+            {
+              label: 'Dodaj pytanie do testu',
+              action: () => { this.props.history.push('/admin/quiz/question/add'); },
+            },
           ],
         },
         {
@@ -83,7 +87,9 @@ function adminPage(WrappedComponent) {
       return (
         <main className={styles.wrapper}>
           <nav className={styles.nav}>
-            <Header align="center" link="true" />
+            <div className={styles.logo}>
+              <Header align="center" link="true" />
+            </div>
             <Menu items={this.menuItems} vertical="true" />
           </nav>
           <div className={styles.content}>

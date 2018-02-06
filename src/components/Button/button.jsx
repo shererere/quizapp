@@ -2,12 +2,19 @@ import React from 'react';
 import styles from './style.css';
 
 const Button = (props) => {
-  const classes = props.center === 'true' ? `${styles.button} ${styles.button_center}` : `${styles.button}`;
-  let button = <button className={classes}>{props.text}</button>;
+  let classes = '';
 
-  if (props.action) {
-    button = <button className={classes} onClick={props.action}>{props.text}</button>;
-  }
+  classes += !props.icon ? `${styles.button} ` : `${styles.blank} `;
+  classes += props.center === 'true' ? `${styles.buttonCenter} ` : '';
+  classes += props.small === 'true' ? `${styles.buttonSmall} ` : '';
+
+  const button = <button
+    className={classes}
+    onClick={props.action ? props.action : null}
+    title={props.title}
+    >
+      {props.text}
+    </button>;
 
   return button;
 };

@@ -1,0 +1,17 @@
+.quizName {
+  /* line-height: 1.3; */
+  margin: 0 0 8px 0;
+  font-weight: 600;
+}
+
+.date {
+  font-size: 12px;
+  margin-bottom: 3px;
+}
+
+.count {
+  font-size: 12px;
+  text-transform: uppercase;
+  display: block;
+  margin: 3px 0;
+}
