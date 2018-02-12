@@ -4,7 +4,8 @@
   "description": "",
   "main": "index_api.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --config webpack.prod.js --env.prod"
   },
   "keywords": [],
   "author": "",
@@ -51,6 +52,8 @@
     "eslint-plugin-react": "^7.4.0",
     "file-loader": "^1.1.5",
     "style-loader": "^0.19.0",
-    "url-loader": "^0.6.2"
+    "uglifyjs-webpack-plugin": "^1.1.8",
+    "url-loader": "^0.6.2",
+    "webpack-merge": "^4.1.1"
   }
 }
