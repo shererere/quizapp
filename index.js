@@ -27,8 +27,6 @@ app.use('/api/v1/question', questions);
 
 app.use('/images', express.static(path.join(__dirname, 'uploads', 'images')));
 
-app.use('/', express.static(path.join(__dirname, 'dist')));
-
 app.use(auth.passport.initialize());
 
 app.post("/login", function(req, res) {
